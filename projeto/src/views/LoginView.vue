@@ -229,9 +229,10 @@ function alternarSenha() {
                         Ainda não tem acesso?
                     </h4>
 
-                    <p>
-                        Entre em contato com o administrador do sistema.
-                    </p>
+                    <button
+                    type="button"
+                    class="btn-login"
+                    @click="fazerLogin">Criar Conta</button
 
                 </div>
 

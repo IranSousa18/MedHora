@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import HomeView from '../views/HomeView.vue'
 import HistoryView from '../views/HistoryView.vue'
+import CadastroView from '../views/CadastroView.vue'
 
 const routes = [
   {
@@ -12,6 +13,10 @@ const routes = [
   {
     path: '/login',
     component: LoginView,
+  },
+  {
+    path: '/cadastro',
+    component: CadastroView,
   },
   {
     path: '/home',
