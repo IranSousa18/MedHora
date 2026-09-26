@@ -14,29 +14,47 @@ const mostrarSenha = ref(false)
 
 // Realiza o login
 function fazerLogin() {
+
     if (!email.value || !senha.value) {
         alert('Preencha o e-mail e a senha.')
         return
     }
 
-    // Usuário temporário enquanto não existe banco de dados
-    const usuario = {
-        email: email.value,
-        senha: senha.value
-    }
-
-    localStorage.setItem(
-        'usuarioLogado',
-        JSON.stringify(usuario)
+    const usuarioSalvo = JSON.parse(
+        localStorage.getItem('usuarioCadastrado')
     )
 
-    // Redireciona para a página principal
-    router.push('/home')
-}
+    if (!usuarioSalvo) {
+        alert('Nenhum usuário cadastrado.')
+        return
+    }
 
+    if (
+        email.value === usuarioSalvo.email &&
+        senha.value === usuarioSalvo.senha
+    ) {
+
+        localStorage.setItem(
+            'usuarioLogado',
+            JSON.stringify(usuarioSalvo)
+        )
+
+        router.push('/home')
+
+    } else {
+
+        alert('E-mail ou senha incorretos.')
+
+    }
+}
 // Mostra ou esconde a senha
 function alternarSenha() {
     mostrarSenha.value = !mostrarSenha.value
+}
+
+// Redireciona para a página de cadastro
+function cadastrarUsuario () {
+    router.push('cadastro')
 }
 </script>
 
@@ -154,6 +172,7 @@ function alternarSenha() {
                             :type="mostrarSenha ? 'text' : 'password'"
                             id="senha"
                             placeholder="Sua senha"
+                            minlength="8"
                         >
 
                         <button
@@ -221,18 +240,22 @@ function alternarSenha() {
                 </div>
 
 
-                <!--CONTATO -->
+                <!--Criar Conta -->
 
                 <div class="contact-box">
 
                     <h4>
                         Ainda não tem acesso?
                     </h4>
-
                     <button
                     type="button"
-                    class="btn-login"
-                    @click="fazerLogin">Criar Conta</button
+                    class="btn-criar-conta"
+                    @click="cadastrarUsuario"
+                    >
+                    
+                        Criar Conta
+                    </button>
+                
 
                 </div>
 
