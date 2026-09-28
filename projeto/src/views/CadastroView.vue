@@ -14,6 +14,7 @@ const mostrarConfirmacao = ref(false)
 
 function cadastrarUsuario() {
 
+    // Verifica se todos os campos estão preenchidos
     if (
         !nome.value ||
         !email.value ||
@@ -23,18 +24,21 @@ function cadastrarUsuario() {
         alert('Preencha todos os campos.')
         return
     }
-
+    
+    // Verifica de a confirmar senha é igual senha
     if (senha.value !== confirmarSenha.value) {
         alert('As senhas não coincidem.')
         return
     }
-
+    
     const usuario = {
         nome: nome.value,
         email: email.value,
         senha: senha.value
     }
 
+// Quando todas as informações são inseridas cria e
+// guarda o usuário em um local storage
 localStorage.setItem(
     'usuarioCadastrado',
     JSON.stringify(usuario)
@@ -45,6 +49,7 @@ localStorage.setItem(
     router.push('/')
 }
 
+// Mostra ou esconde a senha
 function alternarSenha() {
     mostrarSenha.value = !mostrarSenha.value
 }
@@ -53,6 +58,7 @@ function alternarConfirmacao() {
     mostrarConfirmacao.value = !mostrarConfirmacao.value
 }
 
+// Volta para a página de login
 function voltarLogin() {
     router.push('/')
 }
