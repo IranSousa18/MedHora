@@ -12,7 +12,7 @@
         </div>
 
         <div class="texto-logo">
-          <h1>Hora do Remédio</h1>
+          <h1>MedHora</h1>
           <p>Sua saúde em dia</p>
         </div>
 
