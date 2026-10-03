@@ -6,7 +6,6 @@
 
       <div>
         <label for="nome">Nome do medicamento *</label>
-
         <input
           id="nome"
           v-model="nome"
@@ -18,7 +17,6 @@
 
       <div>
         <label for="quantidade">Quantidade *</label>
-
         <input
           id="quantidade"
           v-model="quantidade"
@@ -30,7 +28,6 @@
 
       <div>
         <label for="horario">Primeiro horário *</label>
-
         <input
           id="horario"
           v-model="horario"
@@ -58,7 +55,6 @@
 
       <div>
         <label for="dataInicio">Data de início *</label>
-
         <input
           id="dataInicio"
           v-model="dataInicio"
@@ -68,18 +64,17 @@
       </div>
 
       <div>
-        <label for="dataTermino">Data de término</label>
-
+        <label for="dataTermino">Data de término *</label>
         <input
           id="dataTermino"
           v-model="dataTermino"
           type="date"
+          required
         >
       </div>
 
       <div>
         <label for="observacao">Observação</label>
-
         <textarea
           id="observacao"
           v-model="observacao"
@@ -90,7 +85,6 @@
       <button type="submit">
         Salvar medicamento
       </button>
-
     </form>
   </main>
 </template>
@@ -114,15 +108,13 @@ const observacao = ref('')
 function gerarOcorrencias() {
     const ocorrencias = []
 
-    const inicio = new Date(`${dataInicio.value}T${horario.value}`)
+    const inicio = new Date(
+        `${dataInicio.value}T${horario.value}`
+    )
 
-    let fim
-
-    if (dataTermino.value) {
-        fim = new Date(`${dataTermino.value}T23:59:59`)
-    } else {
-        fim = new Date(`${dataInicio.value}T23:59:59`)
-    }
+    const fim = new Date(
+        `${dataTermino.value}T23:59:59`
+    )
 
     let dataAtual = new Date(inicio)
 
@@ -136,7 +128,6 @@ function gerarOcorrencias() {
         const ano = dataAtual.getFullYear()
         const mes = String(dataAtual.getMonth() + 1).padStart(2, '0')
         const dia = String(dataAtual.getDate()).padStart(2, '0')
-
         const hora = String(dataAtual.getHours()).padStart(2, '0')
         const minutos = String(dataAtual.getMinutes()).padStart(2, '0')
 
@@ -156,6 +147,11 @@ function gerarOcorrencias() {
 }
 
 function cadastrarMedicamento() {
+    if (dataTermino.value < dataInicio.value) {
+        alert('A data de término não pode ser anterior à data de início.')
+        return
+    }
+
     const ocorrencias = gerarOcorrencias()
 
     adicionarMedicamento({
