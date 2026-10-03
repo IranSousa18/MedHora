@@ -1,11 +1,9 @@
 <template>
   <main>
     <h1>Histórico</h1>
-
-    <p>Registros dos medicamentos</p>
+    <p>Registro dos medicamentos anteriores</p>
 
     <section v-if="historico.length">
-
       <article
         v-for="grupo in historico"
         :key="grupo.data"
@@ -14,7 +12,7 @@
 
         <div
           v-for="medicamento in grupo.medicamentos"
-          :key="medicamento.id"
+          :key="`${medicamento.medicamentoId}-${medicamento.ocorrenciaId}`"
         >
           <p>
             <strong>{{ medicamento.horario }}</strong>
@@ -29,12 +27,14 @@
           </p>
 
           <strong>
-            {{ medicamento.status === 'tomado' ? 'Tomado' : 'Pendente' }}
+            {{
+              medicamento.status === 'tomado'
+                ? 'Tomado'
+                : 'Pendente'
+            }}
           </strong>
         </div>
-
       </article>
-
     </section>
 
     <p v-else>
@@ -49,46 +49,76 @@ import { buscarMedicamentos } from '../services/medicineStorage'
 
 const historico = ref([])
 
+function obterDataHoje() {
+  const hoje = new Date()
+
+  const ano = hoje.getFullYear()
+  const mes = String(hoje.getMonth() + 1).padStart(2, '0')
+  const dia = String(hoje.getDate()).padStart(2, '0')
+
+  return `${ano}-${mes}-${dia}`
+}
+
 function carregarHistorico() {
-    const medicamentos = buscarMedicamentos()
+  const medicamentos = buscarMedicamentos()
+  const hoje = obterDataHoje()
 
-    const grupos = {}
+  const grupos = {}
 
-    medicamentos.forEach(medicamento => {
-        const data = medicamento.dataInicio
+  medicamentos.forEach(medicamento => {
+    if (!medicamento.ocorrencias) {
+      return
+    }
 
-        if (!grupos[data]) {
-            grupos[data] = []
-        }
+    medicamento.ocorrencias.forEach(ocorrencia => {
+      // O histórico mostra somente dias anteriores a hoje.
+      if (ocorrencia.data >= hoje) {
+        return
+      }
 
-        grupos[data].push(medicamento)
+      if (!grupos[ocorrencia.data]) {
+        grupos[ocorrencia.data] = []
+      }
+
+      grupos[ocorrencia.data].push({
+        medicamentoId: medicamento.id,
+        ocorrenciaId: ocorrencia.id,
+        nome: medicamento.nome,
+        quantidade: medicamento.quantidade,
+        horario: ocorrencia.horario,
+        observacao: medicamento.observacao,
+        status: ocorrencia.status
+      })
     })
+  })
 
-    historico.value = Object.keys(grupos)
-        .sort((a, b) => b.localeCompare(a))
-        .map(data => ({
-            data,
-            medicamentos: grupos[data]
-        }))
+  historico.value = Object.keys(grupos)
+    .sort((a, b) => b.localeCompare(a))
+    .map(data => ({
+      data,
+      medicamentos: grupos[data].sort((a, b) => {
+        return a.horario.localeCompare(b.horario)
+      })
+    }))
 }
 
 function formatarData(data) {
-    const [ano, mes, dia] = data.split('-')
+  const [ano, mes, dia] = data.split('-')
 
-    const dataFormatada = new Date(
-        Number(ano),
-        Number(mes) - 1,
-        Number(dia)
-    )
+  const dataFormatada = new Date(
+    Number(ano),
+    Number(mes) - 1,
+    Number(dia)
+  )
 
-    return dataFormatada.toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric'
-    })
+  return dataFormatada.toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric'
+  })
 }
 
 onMounted(() => {
-    carregarHistorico()
+  carregarHistorico()
 })
 </script>
