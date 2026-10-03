@@ -6,6 +6,7 @@
 
       <div>
         <label for="nome">Nome do medicamento *</label>
+
         <input
           id="nome"
           v-model="nome"
@@ -17,6 +18,7 @@
 
       <div>
         <label for="quantidade">Quantidade *</label>
+
         <input
           id="quantidade"
           v-model="quantidade"
@@ -28,6 +30,7 @@
 
       <div>
         <label for="horario">Primeiro horário *</label>
+
         <input
           id="horario"
           v-model="horario"
@@ -55,6 +58,7 @@
 
       <div>
         <label for="dataInicio">Data de início *</label>
+
         <input
           id="dataInicio"
           v-model="dataInicio"
@@ -65,6 +69,7 @@
 
       <div>
         <label for="dataTermino">Data de término</label>
+
         <input
           id="dataTermino"
           v-model="dataTermino"
@@ -106,7 +111,53 @@ const dataInicio = ref('')
 const dataTermino = ref('')
 const observacao = ref('')
 
+function gerarOcorrencias() {
+    const ocorrencias = []
+
+    const inicio = new Date(`${dataInicio.value}T${horario.value}`)
+
+    let fim
+
+    if (dataTermino.value) {
+        fim = new Date(`${dataTermino.value}T23:59:59`)
+    } else {
+        fim = new Date(`${dataInicio.value}T23:59:59`)
+    }
+
+    let dataAtual = new Date(inicio)
+
+    let intervaloEmHoras = intervalo.value
+
+    if (unidadeIntervalo.value === 'dias') {
+        intervaloEmHoras = intervalo.value * 24
+    }
+
+    while (dataAtual <= fim) {
+        const ano = dataAtual.getFullYear()
+        const mes = String(dataAtual.getMonth() + 1).padStart(2, '0')
+        const dia = String(dataAtual.getDate()).padStart(2, '0')
+
+        const hora = String(dataAtual.getHours()).padStart(2, '0')
+        const minutos = String(dataAtual.getMinutes()).padStart(2, '0')
+
+        ocorrencias.push({
+            id: Date.now() + ocorrencias.length,
+            data: `${ano}-${mes}-${dia}`,
+            horario: `${hora}:${minutos}`,
+            status: 'pendente'
+        })
+
+        dataAtual.setHours(
+            dataAtual.getHours() + intervaloEmHoras
+        )
+    }
+
+    return ocorrencias
+}
+
 function cadastrarMedicamento() {
+    const ocorrencias = gerarOcorrencias()
+
     adicionarMedicamento({
         nome: nome.value,
         quantidade: quantidade.value,
@@ -116,7 +167,7 @@ function cadastrarMedicamento() {
         dataInicio: dataInicio.value,
         dataTermino: dataTermino.value,
         observacao: observacao.value,
-        status: 'pendente'
+        ocorrencias
     })
 
     alert('Medicamento salvo com sucesso!')

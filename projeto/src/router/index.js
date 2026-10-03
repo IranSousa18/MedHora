@@ -6,6 +6,7 @@ import HistoryView from '../views/HistoryView.vue'
 import CadastroView from '../views/CadastroView.vue'
 import MedicinesView from '../views/MedicinesView.vue'
 import MedicineCreateView from '../views/MedicineCreateView.vue'
+import TodayView from '../views/TodayView.vue'
 
 const routes = [
     {

@@ -53,6 +53,36 @@ function atualizarMedicamento(id, dadosAtualizados) {
     return medicamentos[indice]
 }
 
+function atualizarOcorrencia(
+    medicamentoId,
+    ocorrenciaId,
+    dadosAtualizados
+) {
+    const medicamentos = buscarMedicamentos()
+
+    const medicamento = medicamentos.find(
+        medicamento => medicamento.id === medicamentoId
+    )
+
+    if (!medicamento || !medicamento.ocorrencias) {
+        return null
+    }
+
+    const ocorrencia = medicamento.ocorrencias.find(
+        ocorrencia => ocorrencia.id === ocorrenciaId
+    )
+
+    if (!ocorrencia) {
+        return null
+    }
+
+    Object.assign(ocorrencia, dadosAtualizados)
+
+    salvarMedicamentos(medicamentos)
+
+    return ocorrencia
+}
+
 function removerMedicamento(id) {
     const medicamentos = buscarMedicamentos()
 
@@ -67,7 +97,9 @@ function removerMedicamento(id) {
 
 export {
     buscarMedicamentos,
+    salvarMedicamentos,
     adicionarMedicamento,
     atualizarMedicamento,
+    atualizarOcorrencia,
     removerMedicamento
 }
