@@ -132,7 +132,7 @@ function gerarOcorrencias() {
         const minutos = String(dataAtual.getMinutes()).padStart(2, '0')
 
         ocorrencias.push({
-            id: Date.now() + ocorrencias.length,
+            id: `${Date.now()}-${ocorrencias.length}`,
             data: `${ano}-${mes}-${dia}`,
             horario: `${hora}:${minutos}`,
             status: 'pendente'
@@ -148,7 +148,10 @@ function gerarOcorrencias() {
 
 function cadastrarMedicamento() {
     if (dataTermino.value < dataInicio.value) {
-        alert('A data de término não pode ser anterior à data de início.')
+        alert(
+            'A data de término não pode ser anterior à data de início.'
+        )
+
         return
     }
 
