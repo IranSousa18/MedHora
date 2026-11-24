@@ -150,7 +150,7 @@ function cadastrarMedicamento() {
     if (dataTermino.value < dataInicio.value) {
         alert(
             'A data de término não pode ser anterior à data de início.'
-        )
+          )
 
         return
     }
