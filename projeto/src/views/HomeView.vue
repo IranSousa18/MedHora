@@ -1,12 +1,11 @@
+
 <template>
   <div class="painel">
 
     <!-- BARRA LATERAL -->
     <aside class="barra-lateral">
 
-      <!-- Logo -->
       <div class="cabecalho-barra-lateral">
-
         <div class="icone-logo">
           <span class="material-icons">medication</span>
         </div>
@@ -15,37 +14,34 @@
           <h1>MedHora</h1>
           <p>Sua saúde em dia</p>
         </div>
-
       </div>
-
 
       <!-- Navegação -->
       <nav class="menu-lateral">
 
-        <a href="#" class="item-menu ativo">
+        <RouterLink to="/home" class="item-menu ativo">
           <span class="material-icons">home</span>
           <span>Início</span>
-        </a>
+        </RouterLink>
 
-        <a href="#" class="item-menu">
+        <RouterLink to="/hoje" class="item-menu">
           <span class="material-icons">calendar_today</span>
           <span>Hoje</span>
-        </a>
+        </RouterLink>
 
-        <a href="#" class="item-menu">
+        <RouterLink to="/medicamentos" class="item-menu">
           <span class="material-icons">format_list_bulleted</span>
           <span>Medicamentos</span>
-        </a>
+        </RouterLink>
 
-        <a href="#" class="item-menu">
+        <RouterLink to="/historico" class="item-menu">
           <span class="material-icons">history</span>
           <span>Histórico</span>
-        </a>
+        </RouterLink>
 
       </nav>
 
-
-      <!-- Parte inferior da barra lateral -->
+      <!-- Parte inferior -->
       <div class="rodape-barra-lateral">
 
         <a href="#" class="item-menu">
@@ -53,15 +49,18 @@
           <span>Configurações</span>
         </a>
 
+        <a href="#" class="item-menu" @click.prevent="sair">
+          <span class="material-icons">logout</span>
+          <span>Sair</span>
+        </a>
+
       </div>
-
     </aside>
-
 
     <!-- CONTEÚDO PRINCIPAL -->
     <main class="inicio">
 
-      <!-- Cabeçalho da Home -->
+      <!-- Cabeçalho -->
       <header class="cabecalho-inicio">
 
         <div class="boas-vindas">
@@ -71,68 +70,51 @@
 
         <div class="data-atual">
           <span class="material-icons">calendar_today</span>
-          <p>Terça-feira, 16 de setembro de 2026</p>
+          <p>{{ dataAtual }}</p>
         </div>
 
       </header>
 
-
       <!-- RESUMO DO DIA -->
       <section class="resumo-dia">
 
-        <!-- Medicamentos hoje -->
         <article class="cartao-resumo medicamentos-hoje">
-
           <div class="icone-resumo">
             <span class="material-icons">medication</span>
           </div>
 
-          <h2>3</h2>
+          <h2>{{ resumo.total }}</h2>
           <p>Medicamentos hoje</p>
-
         </article>
 
-
-        <!-- Já tomado -->
         <article class="cartao-resumo medicamentos-tomados">
-
           <div class="icone-resumo">
             <span class="material-icons">check_circle</span>
           </div>
 
-          <h2>1</h2>
+          <h2>{{ resumo.tomados }}</h2>
           <p>Já tomado</p>
-
         </article>
 
-
-        <!-- Pendentes -->
         <article class="cartao-resumo medicamentos-pendentes">
-
           <div class="icone-resumo">
             <span class="material-icons">schedule</span>
           </div>
 
-          <h2>2</h2>
+          <h2>{{ resumo.pendentes }}</h2>
           <p>Pendentes</p>
-
         </article>
 
-
-        <!-- Atrasados -->
         <article class="cartao-resumo medicamentos-atrasados">
-
           <div class="icone-resumo">
             <span class="material-icons">access_time</span>
           </div>
 
-          <h2>0</h2>
+          <h2>{{ resumo.atrasados }}</h2>
           <p>Atrasados</p>
-
         </article>
 
       </section>
-
 
       <!-- CONTEÚDO INFERIOR -->
       <section class="conteudo-inicio">
@@ -142,38 +124,41 @@
 
           <h2>Próximo medicamento</h2>
 
-          <div class="informacoes-proximo-medicamento">
+          <div
+            v-if="proximoMedicamento"
+            class="informacoes-proximo-medicamento"
+          >
 
             <div class="icone-medicamento">
               <span class="material-icons">medication</span>
             </div>
 
             <div class="detalhes-medicamento">
-
-              <h3>Dipirona</h3>
-              <p>1 comprimido</p>
+              <h3>{{ proximoMedicamento.nome }}</h3>
+              <p>{{ proximoMedicamento.quantidade }}</p>
 
               <div class="tempo-medicamento">
                 <span class="material-icons">schedule</span>
-                <p>Em 2 horas</p>
+                <p>{{ formatarStatus(proximoMedicamento.status) }}</p>
               </div>
-
             </div>
 
             <div class="horario-medicamento">
-              <strong>16:00</strong>
+              <strong>{{ proximoMedicamento.horario }}</strong>
             </div>
 
           </div>
 
+          <p v-else>
+            Nenhuma dose pendente para hoje.
+          </p>
 
-          <button type="button" class="botao-ver-hoje">
+          <RouterLink to="/hoje" class="botao-ver-hoje">
             Ver todos de hoje
             <span class="material-icons">arrow_forward</span>
-          </button>
+          </RouterLink>
 
         </article>
-
 
         <!-- Mensagem motivacional -->
         <article class="cartao-mensagem-saude">
@@ -195,9 +180,63 @@
   </div>
 </template>
 
-
 <script setup>
-</script>
+import { ref, computed, onMounted } from 'vue'
+import { useRouter, RouterLink } from 'vue-router'
 
+import { buscarMedicamentos } from '../services/medicineStorage'
+import { encerrarSessao } from '../services/authService'
+
+import {
+  listarOcorrenciasDoDia,
+  contarResumo,
+  obterProximaOcorrencia
+} from '../services/scheduleService'
+
+const router = useRouter()
+
+const medicamentos = ref([])
+const dataAtual = ref('')
+
+const medicamentosDoDia = computed(() =>
+  listarOcorrenciasDoDia(medicamentos.value)
+)
+
+const resumo = computed(() =>
+  contarResumo(medicamentosDoDia.value)
+)
+
+const proximoMedicamento = computed(() =>
+  obterProximaOcorrencia(medicamentosDoDia.value)
+)
+
+function carregarDados() {
+  medicamentos.value = buscarMedicamentos()
+
+  dataAtual.value = new Date().toLocaleDateString('pt-BR', {
+    weekday: 'long',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric'
+  })
+}
+
+function formatarStatus(status) {
+  if (status === 'atrasado') return 'Atrasado'
+  if (status === 'pendente') return 'Pendente'
+  if (status === 'tomado') return 'Tomado'
+
+  return status
+}
+
+function sair() {
+  encerrarSessao()
+  router.push('/login')
+}
+
+onMounted(() => {
+  carregarDados()
+})
+</script>
 
 <style src="../assets/styles/home.css"></style>

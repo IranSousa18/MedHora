@@ -1,9 +1,9 @@
+
 <template>
   <main>
     <h1>Cadastrar medicamento</h1>
 
     <form @submit.prevent="cadastrarMedicamento">
-
       <div>
         <label for="nome">Nome do medicamento *</label>
         <input
@@ -92,7 +92,9 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+
 import { adicionarMedicamento } from '../services/medicineStorage'
+import { gerarOcorrencias } from '../services/scheduleService'
 
 const router = useRouter()
 
@@ -105,72 +107,65 @@ const dataInicio = ref('')
 const dataTermino = ref('')
 const observacao = ref('')
 
-function gerarOcorrencias() {
-    const ocorrencias = []
-
-    const inicio = new Date(
-        `${dataInicio.value}T${horario.value}`
-    )
-
-    const fim = new Date(
-        `${dataTermino.value}T23:59:59`
-    )
-
-    let dataAtual = new Date(inicio)
-
-    let intervaloEmHoras = intervalo.value
-
-    if (unidadeIntervalo.value === 'dias') {
-        intervaloEmHoras = intervalo.value * 24
-    }
-
-    while (dataAtual <= fim) {
-        const ano = dataAtual.getFullYear()
-        const mes = String(dataAtual.getMonth() + 1).padStart(2, '0')
-        const dia = String(dataAtual.getDate()).padStart(2, '0')
-        const hora = String(dataAtual.getHours()).padStart(2, '0')
-        const minutos = String(dataAtual.getMinutes()).padStart(2, '0')
-
-        ocorrencias.push({
-            id: `${Date.now()}-${ocorrencias.length}`,
-            data: `${ano}-${mes}-${dia}`,
-            horario: `${hora}:${minutos}`,
-            status: 'pendente'
-        })
-
-        dataAtual.setHours(
-            dataAtual.getHours() + intervaloEmHoras
-        )
-    }
-
-    return ocorrencias
-}
-
 function cadastrarMedicamento() {
-    if (dataTermino.value < dataInicio.value) {
-        alert(
-            'A data de término não pode ser anterior à data de início.'
-          )
+  if (
+    !nome.value.trim() ||
+    !quantidade.value.trim() ||
+    !horario.value ||
+    !dataInicio.value ||
+    !dataTermino.value
+  ) {
+    alert('Preencha todos os campos obrigatórios.')
+    return
+  }
 
-        return
-    }
+  if (dataTermino.value < dataInicio.value) {
+    alert('A data de término não pode ser anterior à data de início.')
+    return
+  }
 
-    const ocorrencias = gerarOcorrencias()
+  if (
+    !Number.isFinite(Number(intervalo.value)) ||
+    Number(intervalo.value) <= 0
+  ) {
+    alert('O intervalo deve ser maior que zero.')
+    return
+  }
 
-    adicionarMedicamento({
-        nome: nome.value,
-        quantidade: quantidade.value,
-        horario: horario.value,
-        intervalo: intervalo.value,
-        unidadeIntervalo: unidadeIntervalo.value,
-        dataInicio: dataInicio.value,
-        dataTermino: dataTermino.value,
-        observacao: observacao.value,
-        ocorrencias
-    })
+  const ocorrencias = gerarOcorrencias({
+    dataInicio: dataInicio.value,
+    dataTermino: dataTermino.value,
+    horario: horario.value,
+    intervalo: Number(intervalo.value),
+    unidadeIntervalo: unidadeIntervalo.value
+  })
 
-    alert('Medicamento salvo com sucesso!')
+  if (ocorrencias.length === 0) {
+    alert(
+      'Não foi possível gerar as doses. Verifique as datas e o intervalo informado.'
+    )
+    return
+  }
 
-    router.push('/hoje')
+  const resultado = adicionarMedicamento({
+    nome: nome.value.trim(),
+    quantidade: quantidade.value.trim(),
+    horario: horario.value,
+    intervalo: Number(intervalo.value),
+    unidadeIntervalo: unidadeIntervalo.value,
+    dataInicio: dataInicio.value,
+    dataTermino: dataTermino.value,
+    observacao: observacao.value.trim(),
+    ocorrencias
+  })
+
+  if (!resultado) {
+    alert('Não foi possível salvar o medicamento.')
+    return
+  }
+
+  alert('Medicamento salvo com sucesso!')
+
+  router.push('/hoje')
 }
 </script>

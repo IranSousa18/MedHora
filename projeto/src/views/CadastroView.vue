@@ -1,6 +1,8 @@
+```vue
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { cadastrarUsuario as salvarUsuario } from '../services/authService'
 
 const router = useRouter()
 
@@ -24,25 +26,26 @@ function cadastrarUsuario() {
         alert('Preencha todos os campos.')
         return
     }
-    
-    // Verifica de a confirmar senha é igual senha
+
+    // Verifica se a confirmação de senha é igual à senha
     if (senha.value !== confirmarSenha.value) {
         alert('As senhas não coincidem.')
         return
     }
-    
+
     const usuario = {
         nome: nome.value,
         email: email.value,
         senha: senha.value
     }
 
-// Quando todas as informações são inseridas cria e
-// guarda o usuário em um local storage
-localStorage.setItem(
-    'usuarioCadastrado',
-    JSON.stringify(usuario)
-)
+    // Salva o usuário através do authService
+    const cadastroSucesso = salvarUsuario(usuario)
+
+    if (!cadastroSucesso) {
+        alert('Não foi possível realizar o cadastro.')
+        return
+    }
 
     alert('Cadastro realizado com sucesso!')
 

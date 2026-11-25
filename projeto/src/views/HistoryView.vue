@@ -1,3 +1,4 @@
+
 <template>
   <main>
     <h1>Histórico</h1>
@@ -27,11 +28,7 @@
           </p>
 
           <strong>
-            {{
-              medicamento.status === 'tomado'
-                ? 'Tomado'
-                : 'Pendente'
-            }}
+            {{ formatarStatus(medicamento.status) }}
           </strong>
         </div>
       </article>
@@ -46,60 +43,14 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { buscarMedicamentos } from '../services/medicineStorage'
+import { listarHistorico } from '../services/scheduleService'
 
 const historico = ref([])
 
-function obterDataHoje() {
-  const hoje = new Date()
-
-  const ano = hoje.getFullYear()
-  const mes = String(hoje.getMonth() + 1).padStart(2, '0')
-  const dia = String(hoje.getDate()).padStart(2, '0')
-
-  return `${ano}-${mes}-${dia}`
-}
-
 function carregarHistorico() {
   const medicamentos = buscarMedicamentos()
-  const hoje = obterDataHoje()
 
-  const grupos = {}
-
-  medicamentos.forEach(medicamento => {
-    if (!medicamento.ocorrencias) {
-      return
-    }
-
-    medicamento.ocorrencias.forEach(ocorrencia => {
-      // O histórico mostra somente dias anteriores a hoje.
-      if (ocorrencia.data >= hoje) {
-        return
-      }
-
-      if (!grupos[ocorrencia.data]) {
-        grupos[ocorrencia.data] = []
-      }
-
-      grupos[ocorrencia.data].push({
-        medicamentoId: medicamento.id,
-        ocorrenciaId: ocorrencia.id,
-        nome: medicamento.nome,
-        quantidade: medicamento.quantidade,
-        horario: ocorrencia.horario,
-        observacao: medicamento.observacao,
-        status: ocorrencia.status
-      })
-    })
-  })
-
-  historico.value = Object.keys(grupos)
-    .sort((a, b) => b.localeCompare(a))
-    .map(data => ({
-      data,
-      medicamentos: grupos[data].sort((a, b) => {
-        return a.horario.localeCompare(b.horario)
-      })
-    }))
+  historico.value = listarHistorico(medicamentos)
 }
 
 function formatarData(data) {
@@ -116,6 +67,12 @@ function formatarData(data) {
     month: 'long',
     year: 'numeric'
   })
+}
+
+function formatarStatus(status) {
+  if (status === 'tomado') return 'Tomado'
+  if (status === 'atrasado') return 'Atrasado'
+  return 'Pendente'
 }
 
 onMounted(() => {

@@ -1,6 +1,11 @@
+```vue
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import {
+  buscarUsuarioCadastrado,
+  autenticarUsuario
+} from '../services/authService'
 
 const router = useRouter()
 
@@ -14,50 +19,37 @@ const mostrarSenha = ref(false)
 
 // Realiza o login
 function fazerLogin() {
+  if (!email.value || !senha.value) {
+    alert('Preencha o e-mail e a senha.')
+    return
+  }
 
-    if (!email.value || !senha.value) {
-        alert('Preencha o e-mail e a senha.')
-        return
-    }
+  const usuarioSalvo = buscarUsuarioCadastrado()
 
-    const usuarioSalvo = JSON.parse(
-        localStorage.getItem('usuarioCadastrado')
-    )
+  if (!usuarioSalvo) {
+    alert('Nenhum usuário cadastrado.')
+    return
+  }
 
-    if (!usuarioSalvo) {
-        alert('Nenhum usuário cadastrado.')
-        return
-    }
+  const loginValido = autenticarUsuario(email.value, senha.value)
 
-    if (
-        email.value === usuarioSalvo.email &&
-        senha.value === usuarioSalvo.senha
-    ) {
-
-        localStorage.setItem(
-            'usuarioLogado',
-            JSON.stringify(usuarioSalvo)
-        )
-
-        router.push('/home')
-
-    } else {
-
-        alert('E-mail ou senha incorretos.')
-
-    }
+  if (loginValido) {
+    router.push('/home')
+  } else {
+    alert('E-mail ou senha incorretos.')
+  }
 }
+
 // Mostra ou esconde a senha
 function alternarSenha() {
-    mostrarSenha.value = !mostrarSenha.value
+  mostrarSenha.value = !mostrarSenha.value
 }
 
 // Redireciona para a página de cadastro
-function cadastrarUsuario () {
-    router.push('cadastro')
+function cadastrarUsuario() {
+  router.push('/cadastro')
 }
 </script>
-
 
 <template>
 
@@ -247,15 +239,16 @@ function cadastrarUsuario () {
                     <h4>
                         Ainda não tem acesso?
                     </h4>
+
                     <button
-                    type="button"
-                    class="btn-criar-conta"
-                    @click="cadastrarUsuario"
+                        type="button"
+                        class="btn-criar-conta"
+                        @click="cadastrarUsuario"
                     >
-                    
+
                         Criar Conta
                     </button>
-                
+
 
                 </div>
 
