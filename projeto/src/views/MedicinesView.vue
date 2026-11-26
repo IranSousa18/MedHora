@@ -135,7 +135,7 @@ const medicamentosFiltrados = computed(() => {
     return medicamentos.value
   }
 
-  return medicamentos.value.filter((medicamento) =>
+  return medicamentos.value.filter(medicamento =>
     String(medicamento.nome || '')
       .toLowerCase()
       .includes(termo)
@@ -168,3 +168,5 @@ onMounted(() => {
   carregarMedicamentos()
 })
 </script>
+
+<style src="../assets/styles/medicines.css"></style>

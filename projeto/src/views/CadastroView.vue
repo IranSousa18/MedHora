@@ -220,5 +220,4 @@ function voltarLogin() {
     </main>
 </template>
 
-<style scoped>
-</style>
+<style src="../assets/styles/login.css"></style>

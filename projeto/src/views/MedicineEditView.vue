@@ -1,6 +1,6 @@
 
 <template>
-  <main>
+  <main class="formulario-medicamento">
     <h1>Editar medicamento</h1>
 
     <p v-if="carregando">Carregando medicamento...</p>
@@ -192,3 +192,5 @@ function voltar() {
   router.push('/medicamentos')
 }
 </script>
+
+<style src="../assets/styles/medicines.css"></style>

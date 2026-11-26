@@ -1,0 +1,333 @@
+
+/* =====================================
+   MEDHORA - LOGIN E CADASTRO
+===================================== */
+
+.login-container {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #fff;
+}
+
+/* PAINEL ESQUERDO */
+
+.painel-esquerdo {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: 55px;
+  background: linear-gradient(145deg, #146c43, #198754 65%, #35a56e);
+  color: white;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.icone-logo {
+  width: 55px;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.18);
+  font-size: 29px;
+}
+
+.logo-texto h2 {
+  color: white;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.logo-texto h2 span {
+  color: #b9f2ce;
+}
+
+.logo-texto p {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+}
+
+.frases {
+  position: relative;
+  z-index: 1;
+  max-width: 470px;
+  margin: auto 0;
+}
+
+.linha {
+  width: 55px;
+  height: 5px;
+  margin-bottom: 25px;
+  border-radius: 5px;
+  background: #a9edc2;
+}
+
+.frases h3 {
+  color: white;
+  font-size: clamp(27px, 3vw, 39px);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.planta {
+  position: absolute;
+  right: 30px;
+  bottom: 10px;
+  font-size: 150px;
+  opacity: 0.15;
+  transform: rotate(-15deg);
+  pointer-events: none;
+}
+
+/* PAINEL DIREITO */
+
+.painel-direita {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: #f8fbf9;
+}
+
+.form-box {
+  width: 100%;
+  max-width: 440px;
+  padding: 38px;
+  border: 1px solid #e8eee9;
+  border-radius: 20px;
+  background: white;
+  box-shadow: 0 10px 40px rgba(30, 70, 50, 0.06);
+}
+
+.form-box h1 {
+  margin-bottom: 8px;
+  font-size: 29px;
+  font-weight: 700;
+}
+
+.subtitulo {
+  margin-bottom: 30px;
+  color: #718096;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* CAMPOS */
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  color: #263238;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrapper input {
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  padding: 10px 42px;
+  border: 1px solid #e2e8e5;
+  border-radius: 9px;
+  background: #fff;
+  color: #263238;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.input-wrapper input:focus {
+  border-color: #198754;
+  box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.1);
+}
+
+.input-wrapper input::placeholder {
+  color: #a0aaa4;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  z-index: 1;
+  color: #829188;
+  font-size: 17px;
+}
+
+.btn-mostrar-senha {
+  position: absolute;
+  right: 12px;
+  padding: 5px;
+  border: none;
+  background: transparent;
+  color: #718096;
+  font-size: 18px;
+}
+
+.btn-mostrar-senha:hover {
+  color: #198754;
+}
+
+/* OPÇÕES */
+
+.opcoes {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 4px 0 22px;
+}
+
+.lembrar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #718096;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.lembrar input {
+  width: 16px;
+  height: 16px;
+  accent-color: #198754;
+  cursor: pointer;
+}
+
+/* BOTÕES */
+
+.btn-login,
+.btn-criar-conta {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 700;
+  transition: 0.2s ease;
+}
+
+.btn-login {
+  border: none;
+  background: #198754;
+  color: white;
+  box-shadow: 0 4px 12px rgba(25, 135, 84, 0.15);
+}
+
+.btn-login:hover {
+  background: #146c43;
+  transform: translateY(-1px);
+}
+
+.btn-criar-conta {
+  margin-top: 12px;
+  border: 1px solid #198754;
+  background: white;
+  color: #198754;
+}
+
+.btn-criar-conta:hover {
+  background: #e5f3e9;
+}
+
+/* SEPARADOR */
+
+.separador {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 25px 0;
+  color: #a0aaa4;
+  font-size: 12px;
+}
+
+.separador::before,
+.separador::after {
+  flex: 1;
+  height: 1px;
+  background: #e8eee9;
+  content: "";
+}
+
+/* CRIAR CONTA / VOLTAR */
+
+.contact-box {
+  text-align: center;
+}
+
+.contact-box h4 {
+  color: #718096;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 900px) {
+  .login-container {
+    grid-template-columns: 0.8fr 1.2fr;
+  }
+
+  .painel-esquerdo {
+    padding: 35px;
+  }
+
+  .painel-direita {
+    padding: 25px;
+  }
+
+  .form-box {
+    padding: 28px;
+  }
+}
+
+@media (max-width: 650px) {
+  .login-container {
+    grid-template-columns: 1fr;
+  }
+
+  .painel-esquerdo {
+    min-height: 190px;
+    padding: 25px;
+  }
+
+  .frases,
+  .planta {
+    display: none;
+  }
+
+  .painel-direita {
+    min-height: auto;
+    padding: 25px 16px;
+  }
+
+  .form-box {
+    max-width: 460px;
+    padding: 25px 20px;
+    box-shadow: none;
+  }
+
+  .form-box h1 {
+    font-size: 25px;
+  }
+}

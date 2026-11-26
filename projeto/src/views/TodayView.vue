@@ -1,83 +1,143 @@
 
 <template>
-  <main>
-    <h1>Hoje</h1>
-    <p>Medicamentos do dia</p>
+  <main class="pagina-hoje">
+    <header class="cabecalho-hoje">
+      <div>
+        <span class="subtitulo-hoje">ROTINA DE MEDICAÇÃO</span>
+        <h1>Hoje</h1>
+        <p>Confira seus medicamentos e acompanhe suas doses diárias.</p>
+      </div>
+    </header>
 
-    <nav>
+    <nav class="filtros-hoje">
       <button
         type="button"
+        :class="{ ativo: filtro === 'todos' }"
         @click="filtro = 'todos'"
       >
-        Todos ({{ medicamentosDoDia.length }})
+        Todos
+        <span class="numero-filtro">{{ medicamentosDoDia.length }}</span>
       </button>
 
       <button
         type="button"
+        :class="{ ativo: filtro === 'pendentes' }"
         @click="filtro = 'pendentes'"
       >
-        Pendentes ({{ medicamentosPendentes.length }})
+        Pendentes
+        <span class="numero-filtro">{{ medicamentosPendentes.length }}</span>
       </button>
 
       <button
         type="button"
+        :class="{ ativo: filtro === 'tomados' }"
         @click="filtro = 'tomados'"
       >
-        Tomados ({{ medicamentosTomados.length }})
+        Tomados
+        <span class="numero-filtro">{{ medicamentosTomados.length }}</span>
       </button>
     </nav>
 
-    <section v-if="medicamentosFiltrados.length">
+    <section
+      v-if="medicamentosFiltrados.length"
+      class="lista-doses-hoje"
+    >
       <article
         v-for="medicamento in medicamentosFiltrados"
         :key="`${medicamento.medicamentoId}-${medicamento.ocorrenciaId}`"
+        class="cartao-dose"
+        :class="`status-${medicamento.status}`"
       >
-        <h2>{{ medicamento.nome }}</h2>
+        <div class="cartao-dose-topo">
+          <div class="identificacao-dose">
+            <div class="icone-dose">
+              <span class="material-icons">medication</span>
+            </div>
 
-        <p>
-          {{ medicamento.quantidade }}
-        </p>
+            <div>
+              <h2>{{ medicamento.nome }}</h2>
+              <p class="dose-quantidade">
+                {{ medicamento.quantidade }}
+              </p>
+            </div>
+          </div>
 
-        <p>
-          Horário: {{ medicamento.horario }}
-        </p>
-
-        <p v-if="medicamento.observacao">
-          Observação: {{ medicamento.observacao }}
-        </p>
-
-        <p>
-          Status:
-          <strong>
+          <span
+            class="etiqueta-status"
+            :class="`etiqueta-${medicamento.status}`"
+          >
             {{ formatarStatus(medicamento.status) }}
-          </strong>
-        </p>
+          </span>
+        </div>
 
-        <button
-          v-if="medicamento.status !== 'tomado'"
-          type="button"
-          @click="alterarStatus(medicamento, 'tomado')"
-        >
-          Marcar como tomado
-        </button>
+        <div class="informacoes-dose">
+          <div class="informacao-dose">
+            <span class="material-icons">schedule</span>
+            <div>
+              <span class="rotulo-informacao">Horário</span>
+              <strong>{{ medicamento.horario }}</strong>
+            </div>
+          </div>
 
-        <button
-          v-else
-          type="button"
-          @click="alterarStatus(medicamento, 'pendente')"
-        >
-          Desfazer confirmação
-        </button>
+          <div
+            v-if="medicamento.observacao"
+            class="informacao-dose"
+          >
+            <span class="material-icons">notes</span>
+            <div>
+              <span class="rotulo-informacao">Observação</span>
+              <strong>{{ medicamento.observacao }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="acoes-dose">
+          <button
+            v-if="medicamento.status !== 'tomado'"
+            type="button"
+            class="botao-confirmar-dose"
+            @click="alterarStatus(medicamento, 'tomado')"
+          >
+            <span class="material-icons">check_circle</span>
+            Marcar como tomado
+          </button>
+
+          <button
+            v-else
+            type="button"
+            class="botao-desfazer-dose"
+            @click="alterarStatus(medicamento, 'pendente')"
+          >
+            <span class="material-icons">undo</span>
+            Desfazer confirmação
+          </button>
+        </div>
       </article>
     </section>
 
-    <p v-else-if="!medicamentosDoDia.length">
-      Nenhuma dose prevista para hoje.
-    </p>
+    <section
+      v-else-if="!medicamentosDoDia.length"
+      class="estado-vazio-hoje"
+    >
+      <div class="icone-vazio-hoje">
+        <span class="material-icons">event_available</span>
+      </div>
 
-    <p v-else>
-      Nenhuma dose neste filtro.
-    </p>
+      <h2>Nenhuma dose prevista</h2>
+      <p>Você não possui medicamentos programados para hoje.</p>
+    </section>
+
+    <section
+      v-else
+      class="estado-vazio-hoje"
+    >
+      <div class="icone-vazio-hoje">
+        <span class="material-icons">filter_list</span>
+      </div>
+
+      <h2>Nenhuma dose neste filtro</h2>
+      <p>Não há medicamentos correspondentes à categoria selecionada.</p>
+    </section>
   </main>
 </template>
 
@@ -178,3 +238,5 @@ onUnmounted(() => {
   clearInterval(temporizador)
 })
 </script>
+
+<style src="../assets/styles/today.css"></style>

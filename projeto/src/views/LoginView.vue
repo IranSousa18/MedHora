@@ -261,6 +261,6 @@ function cadastrarUsuario() {
 </template>
 
 
-<style scoped>
+<style src="../assets/styles/login.css">
 
 </style>

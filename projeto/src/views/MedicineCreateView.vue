@@ -1,6 +1,6 @@
 
 <template>
-  <main>
+  <main class="formulario-medicamento">
     <h1>Cadastrar medicamento</h1>
 
     <form @submit.prevent="cadastrarMedicamento">
@@ -169,3 +169,5 @@ function cadastrarMedicamento() {
   router.push('/hoje')
 }
 </script>
+
+<style src="../assets/styles/medicines.css"></style>

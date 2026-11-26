@@ -1,0 +1,372 @@
+
+/* =========================================
+   PÁGINA HOJE
+========================================= */
+
+.pagina-hoje {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px;
+}
+
+/* CABEÇALHO */
+
+.cabecalho-hoje {
+  margin-bottom: 32px;
+}
+
+.subtitulo-hoje {
+  display: inline-block;
+  color: #20835a;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+}
+
+.cabecalho-hoje h1 {
+  font-size: 2.2rem;
+  color: #183b2d;
+  margin-bottom: 10px;
+}
+
+.cabecalho-hoje p {
+  color: #64748b;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* FILTROS */
+
+.filtros-hoje {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 8px;
+  margin-bottom: 28px;
+  background: #f0f5f2;
+  border: 1px solid #e1eae5;
+  border-radius: 14px;
+}
+
+.filtros-hoje button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 120px;
+  padding: 13px 18px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: #64748b;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.filtros-hoje button:hover {
+  background: #ffffff;
+  color: #20835a;
+}
+
+.filtros-hoje button.ativo {
+  background: #ffffff;
+  color: #20835a;
+  border-color: #dce9e1;
+  box-shadow: 0 2px 6px rgba(15, 45, 30, 0.05);
+}
+
+.numero-filtro {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 25px;
+  height: 25px;
+  padding: 0 7px;
+  background: #e9f5ef;
+  color: #20835a;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* LISTA */
+
+.lista-doses-hoje {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+/* CARTÃO DE DOSE */
+
+.cartao-dose {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 22px;
+  background: #ffffff;
+  border: 1px solid #e2e8e5;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 4px 14px rgba(15, 45, 30, 0.04);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.cartao-dose:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(15, 45, 30, 0.07);
+}
+
+.cartao-dose.status-tomado {
+  border-color: #cce7d6;
+}
+
+.cartao-dose.status-atrasado {
+  border-color: #f0d5d1;
+}
+
+/* IDENTIFICAÇÃO */
+
+.cartao-dose-topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.identificacao-dose {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.icone-dose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  background: #e9f5ef;
+  color: #20835a;
+  border-radius: 14px;
+}
+
+.icone-dose .material-icons {
+  font-size: 26px;
+}
+
+.identificacao-dose h2 {
+  color: #183b2d;
+  font-size: 1.2rem;
+  margin-bottom: 7px;
+  overflow-wrap: anywhere;
+}
+
+.dose-quantidade {
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+/* STATUS */
+
+.etiqueta-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 12px;
+  border-radius: 30px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.etiqueta-pendente {
+  background: #fff5df;
+  color: #a66a12;
+}
+
+.etiqueta-atrasado {
+  background: #fdebea;
+  color: #bd4238;
+}
+
+.etiqueta-tomado {
+  background: #e7f5ec;
+  color: #20835a;
+}
+
+/* INFORMAÇÕES */
+
+.informacoes-dose {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.informacao-dose {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: #64748b;
+}
+
+.informacao-dose > .material-icons {
+  color: #20835a;
+  font-size: 21px;
+  margin-top: 2px;
+}
+
+.informacao-dose div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.rotulo-informacao {
+  color: #94a3b8;
+  font-size: 0.82rem;
+}
+
+.informacao-dose strong {
+  color: #334155;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* BOTÕES */
+
+.acoes-dose {
+  border-top: 1px solid #edf2ef;
+  padding-top: 18px;
+}
+
+.botao-confirmar-dose,
+.botao-desfazer-dose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 13px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.botao-confirmar-dose {
+  background: #20835a;
+  color: #ffffff;
+  border: 1px solid #20835a;
+}
+
+.botao-confirmar-dose:hover {
+  background: #176744;
+  border-color: #176744;
+}
+
+.botao-confirmar-dose .material-icons,
+.botao-desfazer-dose .material-icons {
+  font-size: 20px;
+}
+
+.botao-desfazer-dose {
+  background: #e9f5ef;
+  color: #20835a;
+  border: 1px solid #c9e5d5;
+}
+
+.botao-desfazer-dose:hover {
+  background: #d5ebdf;
+}
+
+/* ESTADO VAZIO */
+
+.estado-vazio-hoje {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: #ffffff;
+  border: 1px dashed #cbd5d1;
+  border-radius: 18px;
+  padding: 60px 25px;
+}
+
+.icone-vazio-hoje {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  height: 70px;
+  background: #e9f5ef;
+  color: #20835a;
+  border-radius: 20px;
+  margin-bottom: 22px;
+}
+
+.icone-vazio-hoje .material-icons {
+  font-size: 34px;
+}
+
+.estado-vazio-hoje h2 {
+  color: #183b2d;
+  font-size: 1.3rem;
+  margin-bottom: 12px;
+}
+
+.estado-vazio-hoje p {
+  color: #64748b;
+  line-height: 1.6;
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 900px) {
+  .lista-doses-hoje {
+    grid-template-columns: 1fr;
+  }
+
+  .pagina-hoje {
+    padding: 30px;
+  }
+}
+
+@media (max-width: 600px) {
+  .pagina-hoje {
+    padding: 20px;
+  }
+
+  .cabecalho-hoje h1 {
+    font-size: 1.8rem;
+  }
+
+  .filtros-hoje {
+    flex-direction: column;
+  }
+
+  .filtros-hoje button {
+    width: 100%;
+  }
+
+  .cartao-dose {
+    padding: 20px;
+  }
+
+  .cartao-dose-topo {
+    flex-direction: column;
+  }
+
+  .identificacao-dose {
+    width: 100%;
+  }
+}

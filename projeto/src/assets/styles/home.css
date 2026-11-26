@@ -1,0 +1,405 @@
+
+/* ESTRUTURA PRINCIPAL */
+
+.painel {
+  display: flex;
+  min-height: 100vh;
+  background: var(--color-background);
+}
+
+/* BARRA LATERAL */
+
+.barra-lateral {
+  width: 255px;
+  min-width: 255px;
+  min-height: 100vh;
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-right: 1px solid var(--color-border);
+}
+
+.cabecalho-barra-lateral {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 45px;
+}
+
+.icone-logo {
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 13px;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.icone-logo .material-icons {
+  font-size: 27px;
+}
+
+.texto-logo h1 {
+  color: var(--color-primary);
+  font-size: 23px;
+  font-weight: 800;
+}
+
+.texto-logo p {
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.menu-lateral {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.item-menu {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 13px 15px;
+  border-radius: 10px;
+  color: var(--color-muted);
+  font-size: 14px;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.item-menu:hover,
+.item-menu.ativo,
+.item-menu.router-link-active {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.item-menu .material-icons {
+  font-size: 21px;
+}
+
+.rodape-barra-lateral {
+  margin-top: auto;
+}
+
+/* CONTEÚDO PRINCIPAL */
+
+.inicio {
+  flex: 1;
+  min-width: 0;
+  padding: 38px;
+}
+
+.cabecalho-inicio {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.boas-vindas h1 {
+  margin-bottom: 7px;
+  font-size: 29px;
+  font-weight: 700;
+}
+
+.boas-vindas p {
+  color: var(--color-muted);
+  font-size: 14px;
+}
+
+.data-atual {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: white;
+  color: var(--color-muted);
+  font-size: 13px;
+}
+
+.data-atual .material-icons {
+  color: var(--color-primary);
+}
+
+/* RESUMO DO DIA */
+
+.resumo-dia {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.cartao-resumo {
+  padding: 23px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: white;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.cartao-resumo:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px rgba(30, 70, 50, 0.09);
+}
+
+.icone-resumo {
+  width: 43px;
+  height: 43px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 17px;
+  border-radius: 12px;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.icone-resumo .material-icons {
+  font-size: 23px;
+}
+
+.cartao-resumo h2 {
+  margin-bottom: 5px;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.cartao-resumo p {
+  color: var(--color-muted);
+  font-size: 13px;
+}
+
+.medicamentos-tomados .icone-resumo {
+  background: #e0f5e9;
+  color: #198754;
+}
+
+.medicamentos-pendentes .icone-resumo {
+  background: #fff4d6;
+  color: #d49a18;
+}
+
+.medicamentos-atrasados .icone-resumo {
+  background: #fde7e9;
+  color: #dc3545;
+}
+
+/* CONTEÚDO INFERIOR */
+
+.conteudo-inicio {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 20px;
+}
+
+.cartao-proximo-medicamento,
+.cartao-mensagem-saude {
+  min-height: 230px;
+  padding: 25px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: white;
+  box-shadow: var(--shadow-card);
+}
+
+.cartao-proximo-medicamento h2 {
+  margin-bottom: 23px;
+  font-size: 18px;
+}
+
+.informacoes-proximo-medicamento {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: #fbfdfb;
+}
+
+.icone-medicamento {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.icone-medicamento .material-icons {
+  font-size: 25px;
+}
+
+.detalhes-medicamento {
+  flex: 1;
+  min-width: 0;
+}
+
+.detalhes-medicamento h3 {
+  margin-bottom: 3px;
+  font-size: 15px;
+}
+
+.detalhes-medicamento > p {
+  color: var(--color-muted);
+  font-size: 13px;
+}
+
+.tempo-medicamento {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  color: #b8860b;
+}
+
+.tempo-medicamento .material-icons {
+  font-size: 15px;
+}
+
+.tempo-medicamento p {
+  color: inherit;
+  font-size: 12px;
+}
+
+.horario-medicamento {
+  color: var(--color-primary);
+  font-size: 17px;
+  white-space: nowrap;
+}
+
+.botao-ver-hoje {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  color: var(--color-primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.botao-ver-hoje:hover {
+  color: var(--color-primary-dark);
+}
+
+.botao-ver-hoje .material-icons {
+  font-size: 18px;
+}
+
+/* MENSAGEM MOTIVACIONAL */
+
+.cartao-mensagem-saude {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 25px;
+  background: linear-gradient(135deg, #e5f3e9, #f4faf6);
+}
+
+.cartao-mensagem-saude blockquote {
+  color: #286344;
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.decoracao-mensagem {
+  color: #4c9c70;
+}
+
+.decoracao-mensagem .material-icons {
+  font-size: 35px;
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 1100px) {
+  .resumo-dia {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .conteudo-inicio {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .painel {
+    flex-direction: column;
+  }
+
+  .barra-lateral {
+    width: 100%;
+    min-width: 0;
+    min-height: auto;
+    padding: 18px;
+  }
+
+  .cabecalho-barra-lateral {
+    margin-bottom: 20px;
+  }
+
+  .menu-lateral {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .item-menu {
+    flex-shrink: 0;
+  }
+
+  .rodape-barra-lateral {
+    margin-top: 12px;
+  }
+
+  .inicio {
+    padding: 25px 18px;
+  }
+
+  .cabecalho-inicio {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .resumo-dia {
+    grid-template-columns: 1fr;
+  }
+
+  .inicio {
+    padding: 20px 14px;
+  }
+
+  .boas-vindas h1 {
+    font-size: 24px;
+  }
+
+  .cartao-resumo,
+  .cartao-proximo-medicamento,
+  .cartao-mensagem-saude {
+    padding: 18px;
+  }
+
+  .informacoes-proximo-medicamento {
+    flex-wrap: wrap;
+  }
+
+  .horario-medicamento {
+    width: 100%;
+    padding-left: 63px;
+  }
+}
