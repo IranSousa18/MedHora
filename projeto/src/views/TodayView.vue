@@ -56,7 +56,7 @@
         <button
           v-if="medicamento.status !== 'tomado'"
           type="button"
-          @click="marcarComoTomado(medicamento)"
+          @click="alterarStatus(medicamento, 'tomado')"
         >
           Marcar como tomado
         </button>
@@ -64,36 +64,47 @@
         <button
           v-else
           type="button"
-          @click="marcarComoPendente(medicamento)"
+          @click="alterarStatus(medicamento, 'pendente')"
         >
-          Marcar como pendente
+          Desfazer confirmação
         </button>
       </article>
     </section>
 
+    <p v-else-if="!medicamentosDoDia.length">
+      Nenhuma dose prevista para hoje.
+    </p>
+
     <p v-else>
-      Nenhum medicamento encontrado para hoje.
+      Nenhuma dose neste filtro.
     </p>
   </main>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 import {
   buscarMedicamentos,
-  atualizarOcorrencia
+  atualizarStatusOcorrencia
 } from '../services/medicineStorage'
 
 import {
-  listarOcorrenciasDoDia
+  listarOcorrenciasDoDia,
+  obterDataHoje
 } from '../services/scheduleService'
 
 const medicamentos = ref([])
 const filtro = ref('todos')
+const agora = ref(new Date())
+let temporizador
 
 const medicamentosDoDia = computed(() => {
-  return listarOcorrenciasDoDia(medicamentos.value)
+  return listarOcorrenciasDoDia(
+    medicamentos.value,
+    obterDataHoje(agora.value),
+    agora.value
+  )
 })
 
 const medicamentosPendentes = computed(() => {
@@ -124,32 +135,18 @@ const medicamentosFiltrados = computed(() => {
 
 function carregarMedicamentos() {
   medicamentos.value = buscarMedicamentos()
+  atualizarRelogio()
 }
 
-function marcarComoTomado(medicamento) {
-  const resultado = atualizarOcorrencia(
-    medicamento.medicamentoId,
-    medicamento.ocorrenciaId,
-    {
-      status: 'tomado'
-    }
-  )
-
-  if (!resultado) {
-    alert('Não foi possível atualizar o status da dose.')
-    return
-  }
-
-  carregarMedicamentos()
+function atualizarRelogio() {
+  agora.value = new Date()
 }
 
-function marcarComoPendente(medicamento) {
-  const resultado = atualizarOcorrencia(
+function alterarStatus(medicamento, status) {
+  const resultado = atualizarStatusOcorrencia(
     medicamento.medicamentoId,
     medicamento.ocorrenciaId,
-    {
-      status: 'pendente'
-    }
+    status
   )
 
   if (!resultado) {
@@ -174,5 +171,10 @@ function formatarStatus(status) {
 
 onMounted(() => {
   carregarMedicamentos()
+  temporizador = setInterval(atualizarRelogio, 1000)
+})
+
+onUnmounted(() => {
+  clearInterval(temporizador)
 })
 </script>

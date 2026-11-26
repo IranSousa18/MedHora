@@ -202,10 +202,10 @@ function cadastrarUsuario() {
 
                     </label>
 
-
+<!-- 
                     <a href="#">
                         Esqueceu sua senha?
-                    </a>
+                    </a> -->
 
                 </div>
 
