@@ -1,3 +1,4 @@
+
 const STORAGE_KEY = 'medicamentos'
 const STATUS_VALIDOS = ['pendente', 'tomado']
 
@@ -13,6 +14,52 @@ function normalizarOcorrencia(oc, indice = 0) {
         id: oc.id ? String(oc.id) : gerarId(`oc_${indice}`),
         status: STATUS_VALIDOS.includes(oc.status) ? oc.status : 'pendente'
     }
+}
+
+function criarDataOcorrencia(data, horario) {
+    if (
+        typeof data !== 'string' ||
+        !/^\d{4}-\d{2}-\d{2}$/.test(data) ||
+        typeof horario !== 'string' ||
+        !/^\d{2}:\d{2}$/.test(horario)
+    ) {
+        return null
+    }
+
+    const [ano, mes, dia] = data.split('-').map(Number)
+    const [hora, minuto] = horario.split(':').map(Number)
+
+    if (
+        mes < 1 || mes > 12 ||
+        dia < 1 || dia > 31 ||
+        hora < 0 || hora > 23 ||
+        minuto < 0 || minuto > 59
+    ) {
+        return null
+    }
+
+    const dataHora = new Date(ano, mes - 1, dia, hora, minuto)
+
+    if (
+        dataHora.getFullYear() !== ano ||
+        dataHora.getMonth() !== mes - 1 ||
+        dataHora.getDate() !== dia ||
+        dataHora.getHours() !== hora ||
+        dataHora.getMinutes() !== minuto
+    ) {
+        return null
+    }
+
+    return dataHora
+}
+
+function dosePodeSerMarcadaComoTomada(ocorrencia, agora = new Date()) {
+    const dataDose = criarDataOcorrencia(
+        ocorrencia.data,
+        ocorrencia.horario
+    )
+
+    return dataDose !== null && dataDose.getTime() <= agora.getTime()
 }
 
 export function buscarMedicamentos() {
@@ -103,6 +150,13 @@ export function atualizarOcorrencia(medicamentoId, ocorrenciaId, dados) {
     const oc = med?.ocorrencias?.find((o) => String(o.id) === String(ocorrenciaId))
 
     if (!oc) {
+        return null
+    }
+
+    if (
+        dados.status === 'tomado' &&
+        !dosePodeSerMarcadaComoTomada(oc)
+    ) {
         return null
     }
 
