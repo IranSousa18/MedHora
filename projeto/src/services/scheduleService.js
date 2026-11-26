@@ -1,3 +1,4 @@
+
 export const TOLERANCIA_MINUTOS = 0
 const MAX_OCORRENCIAS = 500
 const MINUTO_MS = 60 * 1000
@@ -10,11 +11,49 @@ export function obterDataHoje(data = new Date()) {
 }
 
 function criarDataLocal(dataStr, horarioStr = '00:00') {
-    if (!dataStr) return null
+    if (
+        typeof dataStr !== 'string' ||
+        !/^\d{4}-\d{2}-\d{2}$/.test(dataStr) ||
+        typeof horarioStr !== 'string' ||
+        !/^\d{2}:\d{2}$/.test(horarioStr)
+    ) {
+        return null
+    }
+
     const [ano, mes, dia] = dataStr.split('-').map(Number)
     const [hora, min] = horarioStr.split(':').map(Number)
-    const data = new Date(ano, mes - 1, dia, hora || 0, min || 0)
+
+    if (
+        mes < 1 || mes > 12 ||
+        dia < 1 || dia > 31 ||
+        hora < 0 || hora > 23 ||
+        min < 0 || min > 59
+    ) {
+        return null
+    }
+
+    const data = new Date(ano, mes - 1, dia, hora, min)
+
+    if (
+        data.getFullYear() !== ano ||
+        data.getMonth() !== mes - 1 ||
+        data.getDate() !== dia ||
+        data.getHours() !== hora ||
+        data.getMinutes() !== min
+    ) {
+        return null
+    }
+
     return Number.isNaN(data.getTime()) ? null : data
+}
+
+function chaveOcorrencia(oc) {
+    return `${oc.data}_${oc.horario}`
+}
+
+function obterTimestampOcorrencia(oc) {
+    const data = criarDataLocal(oc.data, oc.horario)
+    return data ? data.getTime() : null
 }
 
 export function gerarOcorrencias({
@@ -28,39 +67,132 @@ export function gerarOcorrencias({
     const inicio = criarDataLocal(dataInicio, horario)
     const fim = criarDataLocal(dataTermino || dataInicio, '23:59')
     const valor = Number(intervalo)
-    if (!inicio || !fim || valor <= 0 || fim < inicio) return []
+    const limite = Number(maxOcorrencias)
+
+    if (
+        !inicio ||
+        !fim ||
+        !Number.isFinite(valor) ||
+        valor <= 0 ||
+        !Number.isInteger(limite) ||
+        limite <= 0 ||
+        fim < inicio
+    ) {
+        return []
+    }
 
     const unidade = String(unidadeIntervalo).toLowerCase()
-    const fator = unidade.startsWith('dia') ? 1440 : unidade.startsWith('min') ? 1 : 60
+
+    const fator = unidade.startsWith('dia')
+        ? 1440
+        : unidade.startsWith('min')
+            ? 1
+            : unidade.startsWith('hora')
+                ? 60
+                : null
+
+    if (!fator) return []
+
     const passoMs = valor * fator * MINUTO_MS
+
+    if (!Number.isFinite(passoMs) || passoMs <= 0) {
+        return []
+    }
+
     const ocorrencias = []
 
-    for (let t = inicio.getTime(), i = 0; t <= fim.getTime() && i < maxOcorrencias; t += passoMs, i++) {
+    for (let t = inicio.getTime(); t <= fim.getTime(); t += passoMs) {
+        if (ocorrencias.length >= limite) {
+            const erro = new Error(
+                `O tratamento ultrapassou o limite de ${limite} doses.`
+            )
+            erro.code = 'LIMITE_OCORRENCIAS'
+            throw erro
+        }
+
         const d = new Date(t)
+
         const hh = String(d.getHours()).padStart(2, '0')
         const mm = String(d.getMinutes()).padStart(2, '0')
-        ocorrencias.push({ id: `oc_${t}_${i}`, data: obterDataHoje(d), horario: `${hh}:${mm}`, status: 'pendente' })
+
+        ocorrencias.push({
+            id: `oc_${t}_${ocorrencias.length}`,
+            data: obterDataHoje(d),
+            horario: `${hh}:${mm}`,
+            status: 'pendente'
+        })
+
+        const proximo = t + passoMs
+
+        if (!Number.isFinite(proximo) || proximo <= t) {
+            return []
+        }
     }
+
     return ocorrencias
 }
 
-export function recalcularOcorrencias(ocorrenciasAtuais = [], novaConfig, agora = new Date()) {
-    const hoje = obterDataHoje(agora)
-    const tomadas = ocorrenciasAtuais.filter((oc) => oc.status === 'tomado')
-    const chavesTomadas = new Set(tomadas.map((oc) => `${oc.data}_${oc.horario}`))
+export function recalcularOcorrencias(
+    ocorrenciasAtuais = [],
+    novaConfig,
+    agora = new Date()
+) {
+    const timestampAgora = agora.getTime()
 
-    const inicio = !novaConfig.dataInicio || novaConfig.dataInicio < hoje ? hoje : novaConfig.dataInicio
-    const novas = gerarOcorrencias({ ...novaConfig, dataInicio: inicio })
-        .filter((oc) => !chavesTomadas.has(`${oc.data}_${oc.horario}`))
+    if (!Number.isFinite(timestampAgora)) {
+        return []
+    }
 
-    return [...tomadas, ...novas].sort((a, b) => `${a.data} ${a.horario}`.localeCompare(`${b.data} ${b.horario}`))
+    // Preserva todas as doses já tomadas e todas as doses
+    // que pertencem ao passado, independentemente do status.
+    const preservadas = (ocorrenciasAtuais || []).filter((oc) => {
+        if (oc.status === 'tomado') return true
+
+        const timestamp = obterTimestampOcorrencia(oc)
+
+        return timestamp !== null && timestamp <= timestampAgora
+    })
+
+    const chavesPreservadas = new Set(
+        preservadas.map(chaveOcorrencia)
+    )
+
+    // Gera a nova programação com a configuração informada.
+    const geradas = gerarOcorrencias(novaConfig)
+
+    // Só incorpora as novas doses futuras que não conflitam
+    // com registros já preservados.
+    const futuras = geradas.filter((oc) => {
+        const timestamp = obterTimestampOcorrencia(oc)
+
+        return (
+            timestamp !== null &&
+            timestamp > timestampAgora &&
+            !chavesPreservadas.has(chaveOcorrencia(oc))
+        )
+    })
+
+    return [...preservadas, ...futuras].sort(
+        (a, b) => `${a.data} ${a.horario}`.localeCompare(
+            `${b.data} ${b.horario}`
+        )
+    )
 }
 
-export function obterStatusOcorrencia(ocorrencia, agora = new Date(), tolerancia = TOLERANCIA_MINUTOS) {
+export function obterStatusOcorrencia(
+    ocorrencia,
+    agora = new Date(),
+    tolerancia = TOLERANCIA_MINUTOS
+) {
     if (ocorrencia.status === 'tomado') return 'tomado'
+
     const dataDose = criarDataLocal(ocorrencia.data, ocorrencia.horario)
+
     if (!dataDose) return 'pendente'
-    return agora.getTime() > dataDose.getTime() + tolerancia * MINUTO_MS ? 'atrasado' : 'pendente'
+
+    return agora.getTime() > dataDose.getTime() + tolerancia * MINUTO_MS
+        ? 'atrasado'
+        : 'pendente'
 }
 
 const montarItem = (med, oc, agora) => ({
@@ -74,7 +206,11 @@ const montarItem = (med, oc, agora) => ({
     status: obterStatusOcorrencia(oc, agora)
 })
 
-export function listarOcorrenciasDoDia(medicamentos = [], data = obterDataHoje(), agora = new Date()) {
+export function listarOcorrenciasDoDia(
+    medicamentos = [],
+    data = obterDataHoje(),
+    agora = new Date()
+) {
     return (medicamentos || [])
         .flatMap((med) => (med.ocorrencias || [])
             .filter((oc) => oc.data === data)
@@ -82,8 +218,13 @@ export function listarOcorrenciasDoDia(medicamentos = [], data = obterDataHoje()
         .sort((a, b) => a.horario.localeCompare(b.horario))
 }
 
-export function listarHistorico(medicamentos = [], dataLimite = obterDataHoje(), agora = new Date()) {
+export function listarHistorico(
+    medicamentos = [],
+    dataLimite = obterDataHoje(),
+    agora = new Date()
+) {
     const grupos = {}
+
     for (const med of medicamentos || []) {
         for (const oc of med.ocorrencias || []) {
             if (oc.data < dataLimite) {
@@ -92,11 +233,14 @@ export function listarHistorico(medicamentos = [], dataLimite = obterDataHoje(),
             }
         }
     }
+
     return Object.keys(grupos)
         .sort((a, b) => b.localeCompare(a))
         .map((data) => ({
             data,
-            medicamentos: grupos[data].sort((a, b) => a.horario.localeCompare(b.horario))
+            medicamentos: grupos[data].sort(
+                (a, b) => a.horario.localeCompare(b.horario)
+            )
         }))
 }
 
@@ -105,7 +249,14 @@ export function contarResumo(itens = []) {
     const tomados = lista.filter((i) => i.status === 'tomado').length
     const atrasados = lista.filter((i) => i.status === 'atrasado').length
     const pendentes = lista.length - tomados - atrasados
-    return { total: lista.length, tomados, pendentes, atrasados, naoTomados: pendentes + atrasados }
+
+    return {
+        total: lista.length,
+        tomados,
+        pendentes,
+        atrasados,
+        naoTomados: pendentes + atrasados
+    }
 }
 
 export function obterProximaOcorrencia(itens = []) {
