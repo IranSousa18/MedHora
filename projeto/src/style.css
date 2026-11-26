@@ -1,41 +1,35 @@
+
 /* ========================================
    1. VARIÁVEIS GLOBAIS
 ======================================== */
 
 :root {
-  /* Cores principais */
   --color-primary: #198754;
   --color-primary-hover: #146c43;
 
-  /* Cores de informação e situação */
   --color-info: #3b82f6;
   --color-success: #198754;
   --color-warning: #f5c542;
   --color-danger: #dc3545;
 
-  /* Cores neutras */
   --color-background: #f5f8f7;
   --color-surface: #ffffff;
   --color-text: #263238;
   --color-text-secondary: #718096;
   --color-border: #e2e8e5;
 
-  /* Tipografia */
   --font-primary: 'Segoe UI', Arial, sans-serif;
 
-  /* Espaçamentos */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
   --spacing-lg: 24px;
   --spacing-xl: 32px;
 
-  /* Bordas */
   --radius-sm: 6px;
   --radius-md: 12px;
   --radius-lg: 16px;
 
-  /* Sombras */
   --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
@@ -60,6 +54,11 @@ body {
   color: var(--color-text);
   line-height: 1.5;
   min-width: 320px;
+}
+
+#app {
+  min-height: 100vh;
+  width: 100%;
 }
 
 
@@ -126,10 +125,10 @@ img {
   font-weight: 600;
   font-size: 14px;
 
-  transition: background-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
-
-/* Botão principal */
 
 .btn-primary {
   background-color: var(--color-primary);
@@ -140,8 +139,6 @@ img {
   background-color: var(--color-primary-hover);
 }
 
-/* Botão secundário */
-
 .btn-secondary {
   background-color: #e9f0ec;
   color: var(--color-text);
@@ -151,8 +148,6 @@ img {
   background-color: #dce8e0;
 }
 
-/* Botão de exclusão */
-
 .btn-danger {
   background-color: var(--color-danger);
   color: #ffffff;
@@ -161,8 +156,6 @@ img {
 .btn-danger:hover {
   background-color: #bb2d3b;
 }
-
-/* Foco e acessibilidade */
 
 .btn:focus-visible {
   outline: 3px solid var(--color-info);
@@ -283,8 +276,6 @@ img {
    9. LAYOUT PRINCIPAL
 ======================================== */
 
-/* Estrutura geral */
-
 .app-layout {
   display: flex;
   min-height: 100vh;
@@ -308,7 +299,7 @@ img {
   gap: var(--spacing-xl);
 }
 
-/* Identificação do sistema */
+/* Identificação */
 
 .sidebar-brand {
   font-size: 22px;
@@ -325,18 +316,27 @@ img {
 }
 
 .sidebar-link {
+  width: 100%;
+
   display: flex;
   align-items: center;
   gap: 12px;
 
   padding: 12px;
+
+  border: none;
   border-radius: var(--radius-sm);
+
+  background: transparent;
 
   color: var(--color-text-secondary);
   font-size: 14px;
   font-weight: 500;
+  text-align: left;
 
-  transition: background-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .sidebar-link:hover {
@@ -348,6 +348,11 @@ img {
   background-color: #e5f3e9;
   color: var(--color-primary);
   font-weight: 600;
+}
+
+.sidebar-link:focus-visible {
+  outline: 3px solid var(--color-info);
+  outline-offset: 2px;
 }
 
 /* Área principal */
@@ -374,14 +379,19 @@ img {
   border-bottom: 1px solid var(--color-border);
 }
 
-/* Conteúdo das páginas */
+.topbar-description {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+/* Conteúdo */
 
 .page-content {
   flex: 1;
   padding: var(--spacing-xl);
 }
 
-/* Título das páginas */
+/* Cabeçalho das páginas */
 
 .page-header {
   margin-bottom: var(--spacing-xl);
@@ -398,7 +408,7 @@ img {
 
 
 /* ========================================
-   10. RESPONSIVIDADE
+   10. RESPONSIVIDADE DO LAYOUT
 ======================================== */
 
 @media (max-width: 768px) {
@@ -423,9 +433,12 @@ img {
     flex-direction: row;
     overflow-x: auto;
     gap: var(--spacing-xs);
+
+    padding-bottom: 4px;
   }
 
   .sidebar-link {
+    width: auto;
     flex-shrink: 0;
     padding: 10px;
     font-size: 13px;
@@ -462,4 +475,186 @@ img {
   .btn {
     padding: 9px 14px;
   }
+}
+
+
+/* ========================================
+   11. INDICADORES DO INÍCIO
+======================================== */
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--spacing-md);
+
+  margin-bottom: var(--spacing-xl);
+}
+
+.summary-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+
+  padding: var(--spacing-lg);
+
+  box-shadow: var(--shadow-card);
+}
+
+.summary-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+
+  margin-bottom: var(--spacing-md);
+}
+
+.summary-label {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.summary-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.indicator-info {
+  background-color: var(--color-info);
+}
+
+.indicator-success {
+  background-color: var(--color-success);
+}
+
+.indicator-warning {
+  background-color: var(--color-warning);
+}
+
+.indicator-danger {
+  background-color: var(--color-danger);
+}
+
+.summary-value {
+  display: block;
+
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text);
+
+  margin-bottom: var(--spacing-xs);
+}
+
+.summary-card p {
+  font-size: 12px;
+}
+
+
+/* ========================================
+   12. SEÇÕES DO DASHBOARD
+======================================== */
+
+.dashboard-section {
+  margin-bottom: var(--spacing-lg);
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+
+  margin-bottom: var(--spacing-lg);
+}
+
+.section-heading .card-title {
+  margin-bottom: var(--spacing-xs);
+}
+
+
+/* ========================================
+   13. ESTADOS VAZIOS
+======================================== */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+
+  min-height: 150px;
+  padding: var(--spacing-xl);
+
+  text-align: center;
+
+  background-color: #fafcfb;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.empty-state h3 {
+  font-size: 15px;
+  margin-bottom: var(--spacing-xs);
+}
+
+.empty-state p {
+  max-width: 420px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+
+/* ========================================
+   14. LEGENDA DE SITUAÇÕES
+======================================== */
+
+.status-legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+
+  margin-bottom: var(--spacing-lg);
+}
+
+
+/* ========================================
+   15. RESPONSIVIDADE DOS CARTÕES
+======================================== */
+
+@media (max-width: 1100px) {
+
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+@media (max-width: 480px) {
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-card {
+    padding: var(--spacing-md);
+  }
+
+  .summary-value {
+    font-size: 24px;
+  }
+
+  .empty-state {
+    padding: var(--spacing-lg);
+  }
+
+  .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
 }
