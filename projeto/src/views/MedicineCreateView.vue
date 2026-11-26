@@ -107,40 +107,61 @@ const dataInicio = ref('')
 const dataTermino = ref('')
 const observacao = ref('')
 
-function cadastrarMedicamento() {
-  if (
-    !nome.value.trim() ||
-    !quantidade.value.trim() ||
-    !horario.value ||
-    !dataInicio.value ||
-    !dataTermino.value
-  ) {
+function validarFormulario() {
+  if (!nome.value.trim() || !quantidade.value.trim()) {
+    alert('Nome e quantidade são obrigatórios.')
+    return false
+  }
+
+  if (!horario.value || !dataInicio.value || !dataTermino.value) {
     alert('Preencha todos os campos obrigatórios.')
-    return
+    return false
   }
 
   if (dataTermino.value < dataInicio.value) {
     alert('A data de término não pode ser anterior à data de início.')
-    return
+    return false
   }
 
   if (
     !Number.isFinite(Number(intervalo.value)) ||
     Number(intervalo.value) <= 0
   ) {
-    alert('O intervalo deve ser maior que zero.')
+    alert('O intervalo deve ser um número válido maior que zero.')
+    return false
+  }
+
+  if (!['horas', 'dias'].includes(unidadeIntervalo.value)) {
+    alert('Selecione uma unidade de intervalo válida.')
+    return false
+  }
+
+  return true
+}
+
+function cadastrarMedicamento() {
+  if (!validarFormulario()) return
+
+  let ocorrencias
+
+  try {
+    ocorrencias = gerarOcorrencias({
+      dataInicio: dataInicio.value,
+      dataTermino: dataTermino.value,
+      horario: horario.value,
+      intervalo: Number(intervalo.value),
+      unidadeIntervalo: unidadeIntervalo.value
+    })
+  } catch (erro) {
+    alert(
+      erro.code === 'LIMITE_OCORRENCIAS'
+        ? 'O tratamento ultrapassa o limite de doses permitido.'
+        : 'Não foi possível gerar as doses do medicamento.'
+    )
     return
   }
 
-  const ocorrencias = gerarOcorrencias({
-    dataInicio: dataInicio.value,
-    dataTermino: dataTermino.value,
-    horario: horario.value,
-    intervalo: Number(intervalo.value),
-    unidadeIntervalo: unidadeIntervalo.value
-  })
-
-  if (ocorrencias.length === 0) {
+  if (!ocorrencias.length) {
     alert(
       'Não foi possível gerar as doses. Verifique as datas e o intervalo informado.'
     )

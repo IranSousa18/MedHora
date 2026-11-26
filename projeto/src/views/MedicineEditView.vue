@@ -98,6 +98,7 @@ import {
 } from '../services/medicineStorage'
 
 import {
+  gerarOcorrencias,
   recalcularOcorrencias
 } from '../services/scheduleService'
 
@@ -142,18 +143,40 @@ function carregarMedicamento() {
   carregando.value = false
 }
 
-function salvarEdicao() {
-  if (!medicamentoOriginal) return
+function validarFormulario() {
+  if (!nome.value.trim() || !quantidade.value.trim()) {
+    alert('Nome e quantidade são obrigatórios.')
+    return false
+  }
+
+  if (!horario.value || !dataInicio.value || !dataTermino.value) {
+    alert('Preencha todos os campos obrigatórios.')
+    return false
+  }
 
   if (dataTermino.value < dataInicio.value) {
     alert('A data de término não pode ser anterior à data de início.')
-    return
+    return false
   }
 
-  if (Number(intervalo.value) <= 0) {
-    alert('O intervalo deve ser maior que zero.')
-    return
+  if (
+    !Number.isFinite(Number(intervalo.value)) ||
+    Number(intervalo.value) <= 0
+  ) {
+    alert('O intervalo deve ser um número válido maior que zero.')
+    return false
   }
+
+  if (!['horas', 'dias'].includes(unidadeIntervalo.value)) {
+    alert('Selecione uma unidade de intervalo válida.')
+    return false
+  }
+
+  return true
+}
+
+function salvarEdicao() {
+  if (!medicamentoOriginal || !validarFormulario()) return
 
   const novaConfiguracao = {
     nome: nome.value.trim(),
@@ -166,10 +189,42 @@ function salvarEdicao() {
     observacao: observacao.value.trim()
   }
 
-  const novasOcorrencias = recalcularOcorrencias(
-    medicamentoOriginal.ocorrencias || [],
-    novaConfiguracao
-  )
+  // Validar a nova programação antes de alterar os dados existentes.
+  let geradas
+
+  try {
+    geradas = gerarOcorrencias(novaConfiguracao)
+  } catch (erro) {
+    alert(
+      erro.code === 'LIMITE_OCORRENCIAS'
+        ? 'O tratamento ultrapassa o limite de doses permitido.'
+        : 'Não foi possível gerar as doses do medicamento.'
+    )
+    return
+  }
+
+  if (!geradas.length) {
+    alert(
+      'Não foi possível gerar as doses. Verifique as datas e o intervalo informado.'
+    )
+    return
+  }
+
+  let novasOcorrencias
+
+  try {
+    novasOcorrencias = recalcularOcorrencias(
+      medicamentoOriginal.ocorrencias || [],
+      novaConfiguracao
+    )
+  } catch (erro) {
+    alert(
+      erro.code === 'LIMITE_OCORRENCIAS'
+        ? 'O tratamento ultrapassa o limite de doses permitido.'
+        : 'Não foi possível recalcular as doses.'
+    )
+    return
+  }
 
   const resultado = atualizarMedicamento(
     medicamentoOriginal.id,
