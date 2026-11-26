@@ -2,7 +2,7 @@
 <template>
   <main>
     <h1>Histórico</h1>
-    <p>Registro dos medicamentos anteriores</p>
+    <p>Doses programadas para dias anteriores a hoje</p>
 
     <section v-if="historico.length">
       <article
@@ -35,7 +35,7 @@
     </section>
 
     <p v-else>
-      Nenhum registro encontrado.
+      Nenhuma dose de dias anteriores.
     </p>
   </main>
 </template>
@@ -46,12 +46,6 @@ import { buscarMedicamentos } from '../services/medicineStorage'
 import { listarHistorico } from '../services/scheduleService'
 
 const historico = ref([])
-
-function carregarHistorico() {
-  const medicamentos = buscarMedicamentos()
-
-  historico.value = listarHistorico(medicamentos)
-}
 
 function formatarData(data) {
   const [ano, mes, dia] = data.split('-')
@@ -76,6 +70,6 @@ function formatarStatus(status) {
 }
 
 onMounted(() => {
-  carregarHistorico()
+  historico.value = listarHistorico(buscarMedicamentos())
 })
 </script>

@@ -45,8 +45,8 @@
       <div class="rodape-barra-lateral">
 
         <a href="#" class="item-menu">
-          <span class="material-icons">settings</span>
-          <span>Configurações</span>
+          <!-- <span class="material-icons">settings</span>
+          <span>Configurações</span> -->
         </a>
 
         <a href="#" class="item-menu" @click.prevent="sair">
@@ -83,8 +83,8 @@
             <span class="material-icons">medication</span>
           </div>
 
-          <h2>{{ resumo.total }}</h2>
-          <p>Medicamentos hoje</p>
+          <h2>{{ medicamentos.length }}</h2>
+          <p>Medicamentos cadastrados</p>
         </article>
 
         <article class="cartao-resumo medicamentos-tomados">
@@ -93,7 +93,7 @@
           </div>
 
           <h2>{{ resumo.tomados }}</h2>
-          <p>Já tomado</p>
+          <p>Doses tomadas hoje</p>
         </article>
 
         <article class="cartao-resumo medicamentos-pendentes">
@@ -102,7 +102,7 @@
           </div>
 
           <h2>{{ resumo.pendentes }}</h2>
-          <p>Pendentes</p>
+          <p>Doses pendentes hoje</p>
         </article>
 
         <article class="cartao-resumo medicamentos-atrasados">
@@ -111,7 +111,7 @@
           </div>
 
           <h2>{{ resumo.atrasados }}</h2>
-          <p>Atrasados</p>
+          <p>Doses atrasadas hoje</p>
         </article>
 
       </section>
@@ -122,7 +122,7 @@
         <!-- Próximo medicamento -->
         <article class="cartao-proximo-medicamento">
 
-          <h2>Próximo medicamento</h2>
+          <h2>Próxima dose de hoje</h2>
 
           <div
             v-if="proximoMedicamento"
@@ -139,7 +139,7 @@
 
               <div class="tempo-medicamento">
                 <span class="material-icons">schedule</span>
-                <p>{{ formatarStatus(proximoMedicamento.status) }}</p>
+                <p>Pendente</p>
               </div>
             </div>
 
@@ -148,6 +148,14 @@
             </div>
 
           </div>
+
+          <p v-else-if="!medicamentos.length">
+            Nenhum medicamento cadastrado.
+          </p>
+
+          <p v-else-if="!resumo.total">
+            Nenhuma dose prevista para hoje.
+          </p>
 
           <p v-else>
             Nenhuma dose pendente para hoje.
@@ -181,7 +189,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
 
 import { buscarMedicamentos } from '../services/medicineStorage'
@@ -190,16 +198,27 @@ import { encerrarSessao } from '../services/authService'
 import {
   listarOcorrenciasDoDia,
   contarResumo,
-  obterProximaOcorrencia
+  obterProximaOcorrencia,
+  obterDataHoje
 } from '../services/scheduleService'
 
 const router = useRouter()
 
 const medicamentos = ref([])
-const dataAtual = ref('')
+const agora = ref(new Date())
+let temporizador
+
+const dataAtual = computed(() =>
+  agora.value.toLocaleDateString('pt-BR', {
+    weekday: 'long',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric'
+  })
+)
 
 const medicamentosDoDia = computed(() =>
-  listarOcorrenciasDoDia(medicamentos.value)
+  listarOcorrenciasDoDia(medicamentos.value, obterDataHoje(agora.value), agora.value)
 )
 
 const resumo = computed(() =>
@@ -207,26 +226,11 @@ const resumo = computed(() =>
 )
 
 const proximoMedicamento = computed(() =>
-  obterProximaOcorrencia(medicamentosDoDia.value)
+  obterProximaOcorrencia(medicamentosDoDia.value.filter(dose => dose.status === 'pendente'))
 )
 
-function carregarDados() {
-  medicamentos.value = buscarMedicamentos()
-
-  dataAtual.value = new Date().toLocaleDateString('pt-BR', {
-    weekday: 'long',
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric'
-  })
-}
-
-function formatarStatus(status) {
-  if (status === 'atrasado') return 'Atrasado'
-  if (status === 'pendente') return 'Pendente'
-  if (status === 'tomado') return 'Tomado'
-
-  return status
+function atualizarRelogio() {
+  agora.value = new Date()
 }
 
 function sair() {
@@ -235,7 +239,13 @@ function sair() {
 }
 
 onMounted(() => {
-  carregarDados()
+  medicamentos.value = buscarMedicamentos()
+  atualizarRelogio()
+  temporizador = setInterval(atualizarRelogio, 1000)
+})
+
+onUnmounted(() => {
+  clearInterval(temporizador)
 })
 </script>
 
