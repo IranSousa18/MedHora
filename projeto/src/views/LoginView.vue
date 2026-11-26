@@ -1,37 +1,30 @@
-```vue
+
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import {
-  buscarUsuarioCadastrado,
   autenticarUsuario
 } from '../services/authService'
 
 const router = useRouter()
 
-// Dados do formulário
 const email = ref('')
 const senha = ref('')
 const lembrar = ref(false)
 
-// Controle da senha
 const mostrarSenha = ref(false)
 
-// Realiza o login
 function fazerLogin() {
-  if (!email.value || !senha.value) {
+  if (!email.value.trim() || !senha.value) {
     alert('Preencha o e-mail e a senha.')
     return
   }
 
-  const usuarioSalvo = buscarUsuarioCadastrado()
-
-  if (!usuarioSalvo) {
-    alert('Nenhum usuário cadastrado.')
-    return
-  }
-
-  const loginValido = autenticarUsuario(email.value, senha.value)
+  const loginValido = autenticarUsuario(
+    email.value,
+    senha.value,
+    lembrar.value
+  )
 
   if (loginValido) {
     router.push('/home')
@@ -40,29 +33,22 @@ function fazerLogin() {
   }
 }
 
-// Mostra ou esconde a senha
 function alternarSenha() {
   mostrarSenha.value = !mostrarSenha.value
 }
 
-// Redireciona para a página de cadastro
 function cadastrarUsuario() {
   router.push('/cadastro')
 }
 </script>
 
 <template>
-
     <main class="login-container">
 
-        <!--PAINEL ESQUERDO -->
-
+        <!-- PAINEL ESQUERDO -->
         <section class="painel-esquerdo">
 
-            <!-- Logo -->
-
             <div class="logo">
-
                 <div class="icone-logo">
                     💊
                 </div>
@@ -76,24 +62,15 @@ function cadastrarUsuario() {
                         Sua saúde em dia
                     </p>
                 </div>
-
             </div>
 
-
-            <!-- Frase -->
-
             <div class="frases">
-
                 <div class="linha"></div>
 
                 <h3>
                     “Pequenos cuidados hoje fazem uma grande diferença amanhã.”
                 </h3>
-
             </div>
-
-
-            <!-- Planta -->
 
             <div class="planta">
                 🌿
@@ -101,14 +78,10 @@ function cadastrarUsuario() {
 
         </section>
 
-
         <!-- PAINEL DIREITO -->
-
         <section class="painel-direita">
 
             <div class="form-box">
-
-                <!-- Título -->
 
                 <h1>
                     Entrar no sistema
@@ -118,9 +91,7 @@ function cadastrarUsuario() {
                     Informe seus dados para acessar o MedHora.
                 </p>
 
-
-                <!--E-MAIL -->
-
+                <!-- E-MAIL -->
                 <div class="input-group">
 
                     <label for="email">
@@ -138,15 +109,14 @@ function cadastrarUsuario() {
                             type="email"
                             id="email"
                             placeholder="Ex: seuemail@dominio.com"
+                            autocomplete="email"
                         >
 
                     </div>
 
                 </div>
 
-
-                <!--SENHA -->
-
+                <!-- SENHA -->
                 <div class="input-group">
 
                     <label for="senha">
@@ -164,7 +134,7 @@ function cadastrarUsuario() {
                             :type="mostrarSenha ? 'text' : 'password'"
                             id="senha"
                             placeholder="Sua senha"
-                            minlength="8"
+                            autocomplete="current-password"
                         >
 
                         <button
@@ -173,16 +143,14 @@ function cadastrarUsuario() {
                             @click="alternarSenha"
                             aria-label="Mostrar ou esconder senha"
                         >
-                            {{ mostrarSenha ? '◉' : '◌' }}
+                            {{ mostrarSenha ? '◉' : '○' }}
                         </button>
 
                     </div>
 
                 </div>
 
-
-                <!--OPÇÕES -->
-
+                <!-- OPÇÕES -->
                 <div class="opcoes">
 
                     <label
@@ -202,16 +170,9 @@ function cadastrarUsuario() {
 
                     </label>
 
-<!-- 
-                    <a href="#">
-                        Esqueceu sua senha?
-                    </a> -->
-
                 </div>
 
-
-                <!--BOTÃO LOGIN-->
-
+                <!-- BOTÃO LOGIN -->
                 <button
                     type="button"
                     class="btn-login"
@@ -220,9 +181,7 @@ function cadastrarUsuario() {
                     Entrar
                 </button>
 
-
-                <!--SEPARADOR -->
-
+                <!-- SEPARADOR -->
                 <div class="separador">
 
                     <span>
@@ -231,9 +190,7 @@ function cadastrarUsuario() {
 
                 </div>
 
-
-                <!--Criar Conta -->
-
+                <!-- CRIAR CONTA -->
                 <div class="contact-box">
 
                     <h4>
@@ -245,10 +202,8 @@ function cadastrarUsuario() {
                         class="btn-criar-conta"
                         @click="cadastrarUsuario"
                     >
-
                         Criar Conta
                     </button>
-
 
                 </div>
 
@@ -257,10 +212,6 @@ function cadastrarUsuario() {
         </section>
 
     </main>
-
 </template>
 
-
-<style src="../assets/styles/login.css">
-
-</style>
+<style src="../assets/styles/login.css"></style>

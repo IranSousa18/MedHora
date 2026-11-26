@@ -1,96 +1,104 @@
 
 <template>
-  <main class="formulario-medicamento">
-    <h1>Editar medicamento</h1>
+  <div class="painel">
+    <AppSidebar />
 
-    <p v-if="carregando">Carregando medicamento...</p>
+    <main class="inicio">
+      <div class="formulario-medicamento">
+        <h1>Editar medicamento</h1>
 
-    <form v-else @submit.prevent="salvarEdicao">
-      <div>
-        <label for="nome">Nome do medicamento *</label>
-        <input
-          id="nome"
-          v-model="nome"
-          type="text"
-          required
-        >
+        <p v-if="carregando">Carregando medicamento...</p>
+
+        <form v-else @submit.prevent="salvarEdicao">
+          <div>
+            <label for="nome">Nome do medicamento *</label>
+            <input
+              id="nome"
+              v-model="nome"
+              type="text"
+              required
+            >
+          </div>
+
+          <div>
+            <label for="quantidade">Quantidade *</label>
+            <input
+              id="quantidade"
+              v-model="quantidade"
+              type="text"
+              required
+            >
+          </div>
+
+          <div>
+            <label for="horario">Primeiro horário *</label>
+            <input
+              id="horario"
+              v-model="horario"
+              type="time"
+              required
+            >
+          </div>
+
+          <div>
+            <label for="intervalo">Tomar a cada *</label>
+
+            <input
+              id="intervalo"
+              v-model.number="intervalo"
+              type="number"
+              min="1"
+              required
+            >
+
+            <select v-model="unidadeIntervalo">
+              <option value="horas">horas</option>
+              <option value="dias">dias</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="dataInicio">Data de início *</label>
+            <input
+              id="dataInicio"
+              v-model="dataInicio"
+              type="date"
+              required
+            >
+          </div>
+
+          <div>
+            <label for="dataTermino">Data de término *</label>
+            <input
+              id="dataTermino"
+              v-model="dataTermino"
+              type="date"
+              required
+            >
+          </div>
+
+          <div>
+            <label for="observacao">Observação</label>
+            <textarea
+              id="observacao"
+              v-model="observacao"
+              placeholder="Ex: Após alimentação"
+            ></textarea>
+          </div>
+
+          <button type="submit">Salvar alterações</button>
+          <button type="button" @click="voltar">Cancelar</button>
+        </form>
       </div>
-
-      <div>
-        <label for="quantidade">Quantidade *</label>
-        <input
-          id="quantidade"
-          v-model="quantidade"
-          type="text"
-          required
-        >
-      </div>
-
-      <div>
-        <label for="horario">Primeiro horário *</label>
-        <input
-          id="horario"
-          v-model="horario"
-          type="time"
-          required
-        >
-      </div>
-
-      <div>
-        <label for="intervalo">Tomar a cada *</label>
-
-        <input
-          id="intervalo"
-          v-model.number="intervalo"
-          type="number"
-          min="1"
-          required
-        >
-
-        <select v-model="unidadeIntervalo">
-          <option value="horas">horas</option>
-          <option value="dias">dias</option>
-        </select>
-      </div>
-
-      <div>
-        <label for="dataInicio">Data de início *</label>
-        <input
-          id="dataInicio"
-          v-model="dataInicio"
-          type="date"
-          required
-        >
-      </div>
-
-      <div>
-        <label for="dataTermino">Data de término *</label>
-        <input
-          id="dataTermino"
-          v-model="dataTermino"
-          type="date"
-          required
-        >
-      </div>
-
-      <div>
-        <label for="observacao">Observação</label>
-        <textarea
-          id="observacao"
-          v-model="observacao"
-          placeholder="Ex: Após alimentação"
-        ></textarea>
-      </div>
-
-      <button type="submit">Salvar alterações</button>
-      <button type="button" @click="voltar">Cancelar</button>
-    </form>
-  </main>
+    </main>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+
+import AppSidebar from '../components/shared/AppSidebar.vue'
 
 import {
   buscarMedicamentoPorId,

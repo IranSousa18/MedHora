@@ -1,4 +1,3 @@
-
 import { createRouter, createWebHistory } from 'vue-router'
 
 import LoginView from '../views/LoginView.vue'
@@ -9,6 +8,7 @@ import MedicinesView from '../views/MedicinesView.vue'
 import MedicineCreateView from '../views/MedicineCreateView.vue'
 import MedicineEditView from '../views/MedicineEditView.vue'
 import TodayView from '../views/TodayView.vue'
+import NotFoundView from '../views/NotFoundView.vue'
 
 import { estaAutenticado } from '../services/authService'
 
@@ -56,6 +56,10 @@ const routes = [
         path: '/hoje',
         component: TodayView,
         meta: { protegido: true }
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        component: NotFoundView
     }
 ]
 

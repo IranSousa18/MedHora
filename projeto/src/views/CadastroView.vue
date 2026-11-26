@@ -1,4 +1,4 @@
-```vue
+
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -15,11 +15,12 @@ const mostrarSenha = ref(false)
 const mostrarConfirmacao = ref(false)
 
 function cadastrarUsuario() {
+    const nomeLimpo = nome.value.trim()
+    const emailLimpo = email.value.trim().toLowerCase()
 
-    // Verifica se todos os campos estão preenchidos
     if (
-        !nome.value ||
-        !email.value ||
+        !nomeLimpo ||
+        !emailLimpo ||
         !senha.value ||
         !confirmarSenha.value
     ) {
@@ -27,32 +28,43 @@ function cadastrarUsuario() {
         return
     }
 
-    // Verifica se a confirmação de senha é igual à senha
+    const formatoEmailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+    if (!formatoEmailValido.test(emailLimpo)) {
+        alert('Informe um endereço de e-mail válido.')
+        return
+    }
+
+    if (senha.value.length < 8) {
+        alert('A senha deve ter pelo menos 8 caracteres.')
+        return
+    }
+
     if (senha.value !== confirmarSenha.value) {
         alert('As senhas não coincidem.')
         return
     }
 
     const usuario = {
-        nome: nome.value,
-        email: email.value,
+        nome: nomeLimpo,
+        email: emailLimpo,
         senha: senha.value
     }
 
-    // Salva o usuário através do authService
     const cadastroSucesso = salvarUsuario(usuario)
 
     if (!cadastroSucesso) {
-        alert('Não foi possível realizar o cadastro.')
+        alert(
+            'Não foi possível realizar o cadastro. Verifique se esse e-mail já está cadastrado.'
+        )
         return
     }
 
     alert('Cadastro realizado com sucesso!')
 
-    router.push('/')
+    router.push('/login')
 }
 
-// Mostra ou esconde a senha
 function alternarSenha() {
     mostrarSenha.value = !mostrarSenha.value
 }
@@ -61,161 +73,166 @@ function alternarConfirmacao() {
     mostrarConfirmacao.value = !mostrarConfirmacao.value
 }
 
-// Volta para a página de login
 function voltarLogin() {
-    router.push('/')
+    router.push('/login')
 }
 </script>
 
 <template>
     <main class="login-container">
 
-    <!-- PAINEL ESQUERDO -->
-    <section class="painel-esquerdo">
+        <!-- PAINEL ESQUERDO -->
+        <section class="painel-esquerdo">
 
-    <div class="logo">
-        <div class="icone-logo">
-            💊
-        </div>
+            <div class="logo">
+                <div class="icone-logo">
+                    💊
+                </div>
 
-        <div class="logo-texto">
-            <h2>Med<span>Hora</span></h2>
-            <p>Sua saúde em dia</p>
-        </div>
-    </div>
-
-        <div class="frases">
-        <div class="linha"></div>
-
-        <h3>
-            "Organize seus medicamentos e cuide melhor da sua saúde."
-        </h3>
-        </div>
-
-    <div class="planta">
-        🌿
-    </div>
-
-    </section>
-
-    <!-- PAINEL DIREITO -->
-    <section class="painel-direita">
-
-        <div class="form-box">
-
-        <h1>Criar Conta</h1>
-
-        <p class="subtitulo">
-            Preencha os dados abaixo para se cadastrar.
-        </p>
-
-        <!-- NOME -->
-        <div class="input-group">
-            <label for="nome">Nome Completo</label>
-
-        <div class="input-wrapper">
-            <span class="input-icon">👤</span>
-
-            <input
-            v-model="nome"
-            type="text"
-            id="nome"
-            placeholder="Seu nome"
-            >
+                <div class="logo-texto">
+                    <h2>Med<span>Hora</span></h2>
+                    <p>Sua saúde em dia</p>
+                </div>
             </div>
-        </div>
 
-        <!-- EMAIL -->
-        <div class="input-group">
-            <label for="email">E-mail</label>
+            <div class="frases">
+                <div class="linha"></div>
 
-        <div class="input-wrapper">
-            <span class="input-icon">✉</span>
-
-            <input
-                v-model="email"
-                type="email"
-                id="email"
-                placeholder="Ex: seuemail@dominio.com"
-            >
+                <h3>
+                    "Organize seus medicamentos e cuide melhor da sua saúde."
+                </h3>
             </div>
-        </div>
 
-        <!-- SENHA -->
-        <div class="input-group">
-            <label for="senha">Senha</label>
-
-        <div class="input-wrapper">
-            <span class="input-icon">🔒</span>
-
-            <input
-            v-model="senha"
-            :type="mostrarSenha ? 'text' : 'password'"
-            id="senha"
-            placeholder="Crie uma senha"
-            >
-
-            <button
-                type="button"
-                class="btn-mostrar-senha"
-                @click="alternarSenha"
-            >
-                {{ mostrarSenha ? '◉' : '◌' }}
-            </button>
+            <div class="planta">
+                🌿
             </div>
-        </div>
 
-        <!-- CONFIRMAR SENHA -->
-        <div class="input-group">
-            <label for="confirmarSenha">
-            Confirmar Senha
-        </label>
+        </section>
 
-        <div class="input-wrapper">
-            <span class="input-icon">🔐</span>
+        <!-- PAINEL DIREITO -->
+        <section class="painel-direita">
 
-            <input
-                v-model="confirmarSenha"
-                :type="mostrarConfirmacao ? 'text' : 'password'"
-                id="confirmarSenha"
-                placeholder="Repita a senha"
-            >
+            <div class="form-box">
 
-            <button
-                type="button"
-                class="btn-mostrar-senha"
-                @click="alternarConfirmacao"
-            >
-                {{ mostrarConfirmacao ? '◉' : '◌' }}
-            </button>
+                <h1>Criar Conta</h1>
+
+                <p class="subtitulo">
+                    Preencha os dados abaixo para se cadastrar.
+                </p>
+
+                <!-- NOME -->
+                <div class="input-group">
+                    <label for="nome">Nome Completo</label>
+
+                    <div class="input-wrapper">
+                        <span class="input-icon">👤</span>
+
+                        <input
+                            v-model="nome"
+                            type="text"
+                            id="nome"
+                            placeholder="Seu nome"
+                            autocomplete="name"
+                        >
+                    </div>
+                </div>
+
+                <!-- EMAIL -->
+                <div class="input-group">
+                    <label for="email">E-mail</label>
+
+                    <div class="input-wrapper">
+                        <span class="input-icon">✉</span>
+
+                        <input
+                            v-model="email"
+                            type="email"
+                            id="email"
+                            placeholder="Ex: seuemail@dominio.com"
+                            autocomplete="email"
+                        >
+                    </div>
+                </div>
+
+                <!-- SENHA -->
+                <div class="input-group">
+                    <label for="senha">Senha</label>
+
+                    <div class="input-wrapper">
+                        <span class="input-icon">🔒</span>
+
+                        <input
+                            v-model="senha"
+                            :type="mostrarSenha ? 'text' : 'password'"
+                            id="senha"
+                            placeholder="Crie uma senha"
+                            autocomplete="new-password"
+                        >
+
+                        <button
+                            type="button"
+                            class="btn-mostrar-senha"
+                            @click="alternarSenha"
+                            aria-label="Mostrar ou esconder senha"
+                        >
+                            {{ mostrarSenha ? '◉' : '○' }}
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CONFIRMAR SENHA -->
+                <div class="input-group">
+                    <label for="confirmarSenha">
+                        Confirmar Senha
+                    </label>
+
+                    <div class="input-wrapper">
+                        <span class="input-icon">🔒</span>
+
+                        <input
+                            v-model="confirmarSenha"
+                            :type="mostrarConfirmacao ? 'text' : 'password'"
+                            id="confirmarSenha"
+                            placeholder="Repita a senha"
+                            autocomplete="new-password"
+                        >
+
+                        <button
+                            type="button"
+                            class="btn-mostrar-senha"
+                            @click="alternarConfirmacao"
+                            aria-label="Mostrar ou esconder confirmação da senha"
+                        >
+                            {{ mostrarConfirmacao ? '◉' : '○' }}
+                        </button>
+                    </div>
+                </div>
+
+                <!-- BOTÃO CADASTRAR -->
+                <button
+                    type="button"
+                    class="btn-login"
+                    @click="cadastrarUsuario"
+                >
+                    Criar Conta
+                </button>
+
+                <!-- VOLTAR -->
+                <div class="contact-box">
+                    <h4>Já possui uma conta?</h4>
+
+                    <button
+                        type="button"
+                        class="btn-criar-conta"
+                        @click="voltarLogin"
+                    >
+                        Voltar para Login
+                    </button>
+                </div>
+
             </div>
-        </div>
 
-        <!-- BOTÃO CADASTRAR -->
-        <button
-            type="button"
-            class="btn-login"
-            @click="cadastrarUsuario"
-        >
-        Criar Conta
-        </button>
-
-        <!-- VOLTAR -->
-        <div class="contact-box">
-            <h4>Já possui uma conta?</h4>
-
-        <button
-            type="button"
-            class="btn-criar-conta"
-            @click="voltarLogin"
-        >
-            Voltar para Login
-            </button>
-        </div>
-
-        </div>
-
-    </section>
+        </section>
 
     </main>
 </template>
