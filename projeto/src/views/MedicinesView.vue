@@ -1,4 +1,4 @@
-
+```vue
 <template>
   <div class="painel">
     <AppSidebar />
@@ -113,14 +113,6 @@
         >
           <h2>Nenhum medicamento cadastrado</h2>
           <p>Cadastre seu primeiro medicamento para começar.</p>
-
-          <button
-            type="button"
-            class="btn-novo"
-            @click="irParaCadastro"
-          >
-            Cadastrar medicamento
-          </button>
         </section>
 
         <section
@@ -250,3 +242,4 @@ onMounted(() => {
   }
 }
 </style>
+```
