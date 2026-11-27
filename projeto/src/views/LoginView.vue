@@ -3,7 +3,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import {
-  autenticarUsuario
+  autenticarUsuario,
+  emailValido
 } from '../services/authService'
 
 const router = useRouter()
@@ -17,6 +18,11 @@ const mostrarSenha = ref(false)
 function fazerLogin() {
   if (!email.value.trim() || !senha.value) {
     alert('Preencha o e-mail e a senha.')
+    return
+  }
+
+  if (!emailValido(email.value.trim())) {
+    alert('E-mail inválido.')
     return
   }
 

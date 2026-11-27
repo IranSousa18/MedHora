@@ -1,8 +1,12 @@
-
+```vue
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { cadastrarUsuario as salvarUsuario } from '../services/authService'
+import {
+    cadastrarUsuario as salvarUsuario,
+    emailValido,
+    senhaValida
+} from '../services/authService'
 
 const router = useRouter()
 
@@ -28,15 +32,22 @@ function cadastrarUsuario() {
         return
     }
 
-    const formatoEmailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
-    if (!formatoEmailValido.test(emailLimpo)) {
-        alert('Informe um endereço de e-mail válido.')
+    if (!emailValido(emailLimpo)) {
+        alert('Informe um endereço de e-mail válido, sem emojis.')
         return
     }
 
-    if (senha.value.length < 8) {
-        alert('A senha deve ter pelo menos 8 caracteres.')
+    if (!senhaValida(senha.value)) {
+        alert(
+            'A senha deve ter pelo menos 8 caracteres e não pode conter emojis.'
+        )
+        return
+    }
+
+    if (!senhaValida(confirmarSenha.value)) {
+        alert(
+            'A confirmação da senha deve ter pelo menos 8 caracteres e não pode conter emojis.'
+        )
         return
     }
 
@@ -55,7 +66,7 @@ function cadastrarUsuario() {
 
     if (!cadastroSucesso) {
         alert(
-            'Não foi possível realizar o cadastro. Verifique se esse e-mail já está cadastrado.'
+            'Não foi possível realizar o cadastro. Verifique os dados ou se esse e-mail já está cadastrado.'
         )
         return
     }
@@ -238,3 +249,4 @@ function voltarLogin() {
 </template>
 
 <style src="../assets/styles/login.css"></style>
+```

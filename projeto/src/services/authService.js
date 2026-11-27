@@ -1,6 +1,38 @@
+ // ========================================
+ // CONSTANTES DE ARMAZENAMENTO
+ // ========================================
 
 const CHAVE_USUARIO = 'usuarioCadastrado'
 const CHAVE_SESSAO = 'usuarioLogado'
+
+// ========================================
+// VALIDAÇÕES
+// ========================================
+
+const REGEX_EMAIL =
+    /^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$/
+
+const REGEX_EMOJI =
+    /[\p{Extended_Pictographic}\p{Emoji_Presentation}\uFE0F\u200D\u{1F1E6}-\u{1F1FF}]/u
+
+export function emailValido(email) {
+    return (
+        typeof email === 'string' &&
+        REGEX_EMAIL.test(email.trim())
+    )
+}
+
+export function senhaValida(senha) {
+    return (
+        typeof senha === 'string' &&
+        senha.length >= 8 &&
+        !REGEX_EMOJI.test(senha)
+    )
+}
+
+// ========================================
+// BUSCAR USUÁRIO CADASTRADO
+// ========================================
 
 export function buscarUsuarioCadastrado() {
     try {
@@ -25,6 +57,10 @@ export function buscarUsuarioCadastrado() {
     }
 }
 
+// ========================================
+// BUSCAR USUÁRIO LOGADO
+// ========================================
+
 export function buscarUsuarioLogado() {
     const armazenamentos = [localStorage, sessionStorage]
 
@@ -47,14 +83,15 @@ export function buscarUsuarioLogado() {
                 continue
             }
 
-            // Mantém somente os dados necessários na sessão.
             const sessao = {
                 nome: usuario.nome,
                 email: usuario.email
             }
 
-            // Atualiza sessões antigas que armazenavam a senha.
-            armazenamento.setItem(CHAVE_SESSAO, JSON.stringify(sessao))
+            armazenamento.setItem(
+                CHAVE_SESSAO,
+                JSON.stringify(sessao)
+            )
 
             return sessao
         } catch {
@@ -64,6 +101,10 @@ export function buscarUsuarioLogado() {
 
     return null
 }
+
+// ========================================
+// CADASTRAR USUÁRIO
+// ========================================
 
 export function cadastrarUsuario(usuario) {
     if (
@@ -78,7 +119,11 @@ export function cadastrarUsuario(usuario) {
     const email = usuario.email.trim().toLowerCase()
     const senha = usuario.senha
 
-    if (!nome || !email || !email.includes('@') || !senha) {
+    if (
+        !nome ||
+        !emailValido(email) ||
+        !senhaValida(senha)
+    ) {
         return false
     }
 
@@ -92,15 +137,9 @@ export function cadastrarUsuario(usuario) {
     }
 
     try {
-        const novoUsuario = {
-            nome,
-            email,
-            senha
-        }
-
         localStorage.setItem(
             CHAVE_USUARIO,
-            JSON.stringify(novoUsuario)
+            JSON.stringify({ nome, email, senha })
         )
 
         return true
@@ -109,12 +148,16 @@ export function cadastrarUsuario(usuario) {
     }
 }
 
+// ========================================
+// AUTENTICAR USUÁRIO
+// ========================================
+
 export function autenticarUsuario(email, senha, lembrar = false) {
     if (
         typeof email !== 'string' ||
         typeof senha !== 'string' ||
-        !email.trim() ||
-        !senha
+        !emailValido(email) ||
+        !senhaValida(senha)
     ) {
         return false
     }
@@ -161,19 +204,25 @@ export function autenticarUsuario(email, senha, lembrar = false) {
     }
 }
 
+// ========================================
+// ENCERRAR SESSÃO
+// ========================================
+
 export function encerrarSessao() {
     try {
         localStorage.removeItem(CHAVE_SESSAO)
     } catch {
-        // Evita interromper o encerramento da sessão.
     }
 
     try {
         sessionStorage.removeItem(CHAVE_SESSAO)
     } catch {
-        // Evita interromper o encerramento da sessão.
     }
 }
+
+// ========================================
+// VERIFICAR AUTENTICAÇÃO
+// ========================================
 
 export function estaAutenticado() {
     const usuario = buscarUsuarioLogado()
